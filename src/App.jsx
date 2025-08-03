@@ -16,6 +16,7 @@ function App() {
   const [manv, setManv] = useState(null);
   const [role, setRole] = useState("");
 const [soLuongHocVien, setSoLuongHocVien] = useState(0);
+const [notes, setNotes] = useState({});
 
 async function fetchLopList(manv, role) {
    let query = supabase.from("tbl_lop").select("malop, tenlop");
@@ -67,25 +68,55 @@ useEffect(() => {
   }
   
   // Lấy danh sách học viên theo MaLop
-  async function fetchStudents(maLop) {
-    const { data, error } = await supabase
-      .from("tbl_hv")
-      .select("*")
-      .eq("malop", maLop);
+async function fetchStudents(maLop) {
+  // 1. Lấy học viên
+  const { data: studentData, error: studentError } = await supabase
+    .from("tbl_hv")
+    .select("*")
+    .eq("malop", maLop);
 
-    if (error) {
-      console.error("Lỗi tải học viên:", error.message);
-    } else {
-      setStudents(data);
-	  setSoLuongHocVien(data.length); // ✅ lưu số lượng vào state
-	  
-      const defaultAttendance = {};
-      data.forEach((s) => {
-        defaultAttendance[s.mahv] = "Có mặt";
-      });
-      setAttendance(defaultAttendance);
+  if (studentError) {
+    console.error("Lỗi tải học viên:", studentError.message);
+    return;
+  }
+
+  setStudents(studentData);
+  setSoLuongHocVien(studentData.length);
+
+  // 2. Lấy trạng thái và ghi chú gần nhất của từng học viên
+  const { data: diemDanhData, error: diemDanhError } = await supabase
+    .from("tbl_diemdanh")
+    .select("mahv, trangthai, ghichu, ngay")
+    .in("mahv", studentData.map((s) => s.mahv))
+    .order("ngay", { ascending: false });
+
+  if (diemDanhError) {
+    console.error("Lỗi lấy điểm danh:", diemDanhError.message);
+  }
+
+  const attendanceMap = {};
+  const notesMap = {};
+
+  // Chỉ lấy bản ghi mới nhất mỗi học viên
+  const seen = new Set();
+
+  for (const record of diemDanhData || []) {
+    if (!seen.has(record.mahv)) {
+      attendanceMap[record.mahv] = record.trangthai || "Có mặt";
+      notesMap[record.mahv] = record.ghichu || "";
+      seen.add(record.mahv);
     }
   }
+
+  // Gán mặc định nếu không có bản ghi
+  for (const s of studentData) {
+    if (!attendanceMap[s.mahv]) attendanceMap[s.mahv] = "Có mặt";
+    if (!notesMap[s.mahv]) notesMap[s.mahv] = "";
+  }
+
+  setAttendance(attendanceMap);
+  setNotes(notesMap);
+}
 
   // Toggle điểm danh
 function handleAttendanceChange(mahv, status) {
@@ -102,6 +133,7 @@ function handleAttendanceChange(mahv, status) {
     mahv: s.mahv,
     ngay: today,
     trangthai: attendance[s.mahv],
+	  ghichu: notes[s.mahv] || ""
   }));
 
   const { data, error } = await supabase
@@ -239,6 +271,7 @@ function handleAttendanceChange(mahv, status) {
         </button>
 		
         <h2 style={{ textAlign: "center", color: "#2c3e50", marginBottom: 20 }}>📋 Danh sách điểm danh</h2>
+		  <p>Tổng số học viên: {soLuongHocVien}</p>
         <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
           {students.map((student) => (
             <div
@@ -292,6 +325,30 @@ function handleAttendanceChange(mahv, status) {
                   Nghỉ không phép ❌
                 </label>
               </div>
+			  <div style={{ marginTop: "10px" }}>
+  <label style={{ fontSize: "13px", color: "#555" }}>
+    Ghi chú:
+    <input
+      type="text"
+      placeholder="Nhập ghi chú nếu có..."
+      value={notes[student.mahv] || ""}
+      onChange={(e) =>
+        setNotes((prev) => ({
+          ...prev,
+          [student.mahv]: e.target.value
+        }))
+      }
+      style={{
+        width: "100%",
+        marginTop: "4px",
+        padding: "6px 8px",
+        borderRadius: "6px",
+        border: "1px solid #ccc",
+        fontSize: "14px"
+      }}
+    />
+  </label>
+</div>
             </div>
           ))}
         </div>
