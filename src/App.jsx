@@ -13,30 +13,44 @@ function App() {
   const [students, setStudents] = useState([]);
   const [attendance, setAttendance] = useState({});
   const [loggedIn, setLoggedIn] = useState(false);
+  const [manv, setManv] = useState(null);
+  const [role, setRole] = useState("");
+const [soLuongHocVien, setSoLuongHocVien] = useState(0);
 
+async function fetchLopList(manv, role) {
+   let query = supabase.from("tbl_lop").select("malop, tenlop");
+
+  if (role === "Giáo viên") {
+    query = query.eq("manv", manv); // chỉ lấy lớp của chính giảng viên đó
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.error("Lỗi tải danh sách lớp:", error.message);
+  } else {
+    setLopList(data);
+  }
+  }
+
+  
   // Lấy danh sách lớp
-  useEffect(() => {
-    async function fetchLopList() {
-      const { data, error } = await supabase.from("tbl_lop").select("malop, tenlop");
-	  console.log("Danh sách lớp lấy về:", data);
-      if (error) {
-        console.error("Lỗi tải danh sách lớp:", error.message);
-      } else {
-        setLopList(data);
-      }
-    }
-    fetchLopList();
-  }, []);
+// useEffect sẽ chạy lại mỗi khi maNV thay đổi
+useEffect(() => {
+  if (manv && role) {
+    fetchLopList(manv, role);
+  }
+}, [manv, role]);
 
   // Đăng nhập
   async function handleLogin() {
-    if (!username || !password || !selectedLop) {
+    if (!username || !password) {
       alert("Vui lòng điền đầy đủ thông tin đăng nhập.");
       return;
     }
 
     const { data, error } = await supabase
-      .from("tbl_user")
+      .from("tbl_nv")
       .select("*")
       .eq("username", username)
       .eq("password", password)
@@ -45,11 +59,13 @@ function App() {
     if (error || !data) {
       alert("Sai tên đăng nhập hoặc mật khẩu.");
     } else {
-      setLoggedIn(true);
-      fetchStudents(selectedLop);
+		setManv(data.manv);         // 
+	  setRole(data.role);
+	  setLoggedIn(true);
+	  fetchLopList(data.manv, data.role); // ✅ gọi lấy lớp theo quyền
     }
   }
-
+  
   // Lấy danh sách học viên theo MaLop
   async function fetchStudents(maLop) {
     const { data, error } = await supabase
@@ -61,9 +77,11 @@ function App() {
       console.error("Lỗi tải học viên:", error.message);
     } else {
       setStudents(data);
+	  setSoLuongHocVien(data.length); // ✅ lưu số lượng vào state
+	  
       const defaultAttendance = {};
       data.forEach((s) => {
-        defaultAttendance[s.mahv] = "present";
+        defaultAttendance[s.mahv] = "Có mặt";
       });
       setAttendance(defaultAttendance);
     }
@@ -79,43 +97,21 @@ function handleAttendanceChange(mahv, status) {
 
   // Gửi điểm danh
  async function handleSubmit() {
-  const date = new Date().toISOString().split("T")[0]; // yyyy-mm-dd
-  const payload = {
-    className: selectedLop, // tên sheet
-    date: date,
-    students: students.map((s) => ({
-      mahv: s.mahv,
-      tenhv: s.tenhv,
-      status: getStatusText(attendance[s.mahv]),
-    })),
-  };
+    const today = new Date().toISOString().split("T")[0]; // ngày hôm nay
+  const payload = students.map((s) => ({
+    mahv: s.mahv,
+    ngay: today,
+    trangthai: attendance[s.mahv],
+  }));
 
-  try {
-   const response = await fetch("https://script.google.com/macros/s/AKfycbxH-XVmnHgNNSLRUEr8qKk0skj2ZBd7AR_FW-ke_kv50puHv0aw4eMbMaKIYozqoVxO/exec", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify(payload),
-});
+  const { data, error } = await supabase
+    .from("tbl_diemdanh")
+    .upsert(payload, { onConflict: ["mahv", "ngay"] });
 
-    const text = await response.text();
-    alert(text);
-  } catch (err) {
-    alert("Gửi thất bại: " + err.message);
-  }
-}
-
-function getStatusText(statusCode) {
-  switch (statusCode) {
-    case "present":
-      return "Có mặt";
-    case "absent_excused":
-      return "Nghỉ phép";
-    case "absent_unexcused":
-      return "Nghỉ không phép";
-    default:
-      return "Không rõ";
+  if (error) {
+    alert("Lỗi lưu điểm danh: " + error.message);
+  } else {
+    alert("✅ Điểm danh đã được lưu thành công!");
   }
 }
 
@@ -175,7 +171,28 @@ function getStatusText(statusCode) {
           />
         </div>
 
-        {/* Dropdown chọn lớp */}
+        <button
+          onClick={handleLogin}
+          style={{
+            width: "100%",
+            padding: "12px",
+            backgroundColor: "#3498db",
+            color: "#fff",
+            border: "none",
+            borderRadius: "6px",
+            fontWeight: "600",
+            cursor: "pointer",
+            transition: "background-color 0.3s"
+          }}
+          onMouseOver={(e) => (e.target.style.backgroundColor = "#2980b9")}
+          onMouseOut={(e) => (e.target.style.backgroundColor = "#3498db")}
+        >
+          Đăng nhập
+        </button>
+      </div>
+    ) : (
+      <>
+	  {/* Dropdown chọn lớp */}
         <div style={{ marginBottom: "20px" }}>
           <label style={{ display: "block", fontWeight: "500", marginBottom: "6px", color: "#34495e" }}>
             Chọn lớp:
@@ -199,9 +216,11 @@ function getStatusText(statusCode) {
             ))}
           </select>
         </div>
-
-        <button
-          onClick={handleLogin}
+		    <button
+          onClick={() => {
+  if (selectedLop) fetchStudents(selectedLop);
+  else alert("Vui lòng chọn lớp trước khi tải danh sách.");
+}}
           style={{
             width: "100%",
             padding: "12px",
@@ -216,11 +235,9 @@ function getStatusText(statusCode) {
           onMouseOver={(e) => (e.target.style.backgroundColor = "#2980b9")}
           onMouseOut={(e) => (e.target.style.backgroundColor = "#3498db")}
         >
-          Đăng nhập
+          Tải danh sách lớp
         </button>
-      </div>
-    ) : (
-      <>
+		
         <h2 style={{ textAlign: "center", color: "#2c3e50", marginBottom: 20 }}>📋 Danh sách điểm danh</h2>
         <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
           {students.map((student) => (
@@ -243,9 +260,9 @@ function getStatusText(statusCode) {
                   <input
                     type="radio"
                     name={`attendance-${student.mahv}`}
-                    value="present"
-                    checked={attendance[student.mahv] === "present"}
-                    onChange={() => handleAttendanceChange(student.mahv, "present")}
+                    value="Có mặt"
+                    checked={attendance[student.mahv] === "Có mặt"}
+                    onChange={() => handleAttendanceChange(student.mahv, "Có mặt")}
                     style={{ accentColor: "#27ae60" }}
                   />
                   Có mặt ✅
@@ -255,9 +272,9 @@ function getStatusText(statusCode) {
                   <input
                     type="radio"
                     name={`attendance-${student.mahv}`}
-                    value="absent_excused"
-                    checked={attendance[student.mahv] === "absent_excused"}
-                    onChange={() => handleAttendanceChange(student.mahv, "absent_excused")}
+                    value="Nghỉ phép"
+                    checked={attendance[student.mahv] === "Nghỉ phép"}
+                    onChange={() => handleAttendanceChange(student.mahv, "Nghỉ phép")}
                     style={{ accentColor: "#f39c12" }}
                   />
                   Nghỉ phép 🟡
@@ -267,9 +284,9 @@ function getStatusText(statusCode) {
                   <input
                     type="radio"
                     name={`attendance-${student.mahv}`}
-                    value="absent_unexcused"
-                    checked={attendance[student.mahv] === "absent_unexcused"}
-                    onChange={() => handleAttendanceChange(student.mahv, "absent_unexcused")}
+                    value="Nghỉ không phép"
+                    checked={attendance[student.mahv] === "Nghỉ không phép"}
+                    onChange={() => handleAttendanceChange(student.mahv, "Nghỉ không phép")}
                     style={{ accentColor: "#e74c3c" }}
                   />
                   Nghỉ không phép ❌
@@ -299,4 +316,5 @@ function getStatusText(statusCode) {
   </div>
 );
 }
+
 export default App;
