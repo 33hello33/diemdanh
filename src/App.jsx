@@ -19,8 +19,11 @@ const [soLuongHocVien, setSoLuongHocVien] = useState(0);
 const [notes, setNotes] = useState({});
 
 async function fetchLopList(manv, role) {
-   let query = supabase.from("tbl_lop").select("malop, tenlop");
-
+      let query = supabase
+	   .from("tbl_lop")
+	   .select("malop, tenlop")
+	   .neq("daxoa", "Đã Xóa");
+	
   if (role === "Giáo viên") {
     query = query.eq("manv", manv); // chỉ lấy lớp của chính giảng viên đó
   }
