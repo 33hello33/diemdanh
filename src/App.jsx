@@ -354,7 +354,7 @@ function handleAttendanceChange(mahv, status) {
       [student.mahv]: e.target.value
     }))
   }
-  rows={2}
+  rows={4}
   style={{
     width: "100%",
     marginTop: "4px",
@@ -363,7 +363,7 @@ function handleAttendanceChange(mahv, status) {
     border: "1px solid #ccc",
     fontSize: "14px",
     resize: "vertical",
-    minHeight: "40px",
+    minHeight: "60px",
     lineHeight: "1.5"
   }}
 ></textarea>
