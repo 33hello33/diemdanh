@@ -197,31 +197,33 @@ function App() {
 
   // ====================== Lịch sử điểm danh theo tháng ======================
   async function fetchAttendanceHistoryForMonth(mahv, monthDate) {
-    const { first, last } = getMonthRange(monthDate);
-    const from = toISODate(first);
-    const to = toISODate(last);
+  const { first, last } = getMonthRange(monthDate);
+  const from = toISODate(first);
+  const to = toISODate(last);
 
-    const { data, error } = await supabase
-      .from("tbl_diemdanh")
-      .select("mahv, trangthai, ngay")
-      .eq("mahv", mahv)
-      .gte("ngay", from)
-      .lte("ngay", to)
-      .order("ngay", { ascending: true });
+  const { data, error } = await supabase
+    .from("tbl_diemdanh")
+    .select("mahv, trangthai, ghichu, ngay") // 👈 thêm ghichu
+    .eq("mahv", mahv)
+    .gte("ngay", from)
+    .lte("ngay", to)
+    .order("ngay", { ascending: true });
 
-    if (error) {
-      console.error("Lỗi lấy lịch sử điểm danh:", error.message);
-      return;
-    }
-
-    const map = {};
-    for (const r of data || []) {
-      const d = new Date(r.ngay);
-      const iso = toISODate(d);
-      map[iso] = r.trangthai || "";
-    }
-    setHistoryMap(prev => ({ ...prev, [mahv]: map }));
+  if (error) {
+    console.error("Lỗi lấy lịch sử điểm danh:", error.message);
+    return;
   }
+
+  const map = {};
+  for (const r of data || []) {
+    const iso = toISODate(new Date(r.ngay));
+    map[iso] = {
+      status: r.trangthai || "",
+      note: (r.ghichu || "").trim()
+    };
+  }
+  setHistoryMap(prev => ({ ...prev, [mahv]: map }));
+}
 
   function toggleCalendar(mahv) {
     setCalendarOpen(prev => {
@@ -303,8 +305,8 @@ function App() {
             if (day === null) return <div key={`e-${idx}`} />;
 
             const d = new Date(y, monthDate.getMonth(), day);
-            const iso = toISODate(d);
-            const status = studentHistory[iso] || "";
+            const entry = studentHistory[iso];
+            const status = entry?.status || "";
             const bg = STATUS_COLOR[status] || "#f0f2f5";
             const color = status ? "#fff" : "#333";
 
@@ -344,6 +346,65 @@ function App() {
             Không có dữ liệu
           </span>
         </div>
+
+        {/* Danh sách ghi chú theo ngày */}
+{(() => {
+  const noteEntries = Object.entries(studentHistory)
+    .filter(([dateISO, v]) => v?.note)              // chỉ lấy ngày có note
+    .sort(([a], [b]) => (a < b ? -1 : 1));          // sắp tăng dần theo ngày
+
+  if (noteEntries.length === 0) return (
+    <div style={{ marginTop: 10, fontSize: 13, color: "#6b7280" }}>
+      Không có ghi chú trong tháng này.
+    </div>
+  );
+
+  return (
+    <div style={{ marginTop: 12 }}>
+      <div style={{ fontWeight: 600, marginBottom: 6, color: "#374151" }}>Ghi chú theo ngày</div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        {noteEntries.map(([dateISO, v]) => {
+          const [yyyy, mm, dd] = dateISO.split("-");
+          const badgeColor = STATUS_COLOR[v.status] || "#9ca3af";
+          return (
+            <div
+              key={dateISO}
+              style={{
+                border: "1px solid #e5e7eb",
+                borderRadius: 8,
+                padding: "8px 10px",
+                background: "#fafafa"
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                <span style={{
+                  width: 10, height: 10, borderRadius: 3, background: badgeColor, display: "inline-block"
+                }} />
+                <span style={{ fontWeight: 600 }}>{`${dd}/${mm}`}</span>
+                {v.status && (
+                  <span style={{
+                    marginLeft: 8,
+                    padding: "2px 6px",
+                    borderRadius: 6,
+                    fontSize: 12,
+                    background: "#eef2ff",
+                    color: "#374151",
+                    border: "1px solid #e5e7eb"
+                  }}>
+                    {v.status}
+                  </span>
+                )}
+              </div>
+              <div style={{ fontSize: 14, color: "#374151", whiteSpace: "pre-wrap" }}>
+                {v.note}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+})()}
       </div>
     );
   }
