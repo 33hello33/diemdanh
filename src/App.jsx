@@ -345,25 +345,28 @@ function handleAttendanceChange(mahv, status) {
 			  <div style={{ marginTop: "10px" }}>
   <label style={{ fontSize: "13px", color: "#555" }}>
     Ghi chú:
-    <input
-      type="text"
-      placeholder="Nhập ghi chú nếu có..."
-      value={notes[student.mahv] || ""}
-      onChange={(e) =>
-        setNotes((prev) => ({
-          ...prev,
-          [student.mahv]: e.target.value
-        }))
-      }
-      style={{
-        width: "100%",
-        marginTop: "4px",
-        padding: "6px 8px",
-        borderRadius: "6px",
-        border: "1px solid #ccc",
-        fontSize: "14px"
-      }}
-    />
+    <textarea
+  placeholder="Nhập ghi chú nếu có..."
+  value={notes[student.mahv] || ""}
+  onChange={(e) =>
+    setNotes((prev) => ({
+      ...prev,
+      [student.mahv]: e.target.value
+    }))
+  }
+  rows={2}
+  style={{
+    width: "100%",
+    marginTop: "4px",
+    padding: "6px 8px",
+    borderRadius: "6px",
+    border: "1px solid #ccc",
+    fontSize: "14px",
+    resize: "vertical",
+    minHeight: "40px",
+    lineHeight: "1.5"
+  }}
+></textarea>
   </label>
 </div>
             </div>
