@@ -305,6 +305,7 @@ function App() {
             if (day === null) return <div key={`e-${idx}`} />;
 
             const d = new Date(y, monthDate.getMonth(), day);
+            const iso = toISODate(d);
             const entry = studentHistory[iso];
             const status = entry?.status || "";
             const bg = STATUS_COLOR[status] || "#f0f2f5";
