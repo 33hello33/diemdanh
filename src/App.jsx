@@ -78,7 +78,8 @@ async function fetchStudents(maLop) {
     .select("*")
     .eq("malop", maLop)
 	.neq("trangthai", "Đã Nghỉ");  // ⬅️ Chỉ lấy học viên chưa nghỉ
-
+    .order("tenhv", { ascending: true });  // ⬅️ sắp xếp theo tên
+	
   if (studentError) {
     console.error("Lỗi tải học viên:", studentError.message);
     return;
