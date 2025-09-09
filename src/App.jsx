@@ -155,7 +155,7 @@ function handleAttendanceChange(mahv, status) {
 
   const { data, error } = await supabase
     .from("tbl_diemdanh")
-    .upsert(payload, { onConflict: ["mahv", "ngay"] });
+    .upsert(payload, { onConflict: "mahv,ngay" });
 
   if (error) {
     alert("Lỗi lưu điểm danh: " + error.message);
