@@ -77,7 +77,7 @@ async function fetchStudents(maLop) {
     .from("tbl_hv")
     .select("*")
     .eq("malop", maLop)
-	.neq("trangthai", "Đã Nghỉ");  // ⬅️ Chỉ lấy học viên chưa nghỉ
+	.neq("trangthai", "Đã Nghỉ")  // ⬅️ Chỉ lấy học viên chưa nghỉ
     .order("tenhv", { ascending: true });  // ⬅️ sắp xếp theo tên
 	
   if (studentError) {
