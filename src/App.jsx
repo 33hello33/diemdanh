@@ -19,7 +19,10 @@ const [soLuongHocVien, setSoLuongHocVien] = useState(0);
 const [notes, setNotes] = useState({});
 
 async function fetchLopList(manv, role) {
-   let query = supabase.from("tbl_lop").select("malop, tenlop");
+   let query = supabase
+	   .from("tbl_lop")
+	   .select("malop, tenlop")
+	   .neq("daxoa", "Đã Xóa");;
 
   if (role === "Giáo viên") {
     query = query.eq("manv", manv); // chỉ lấy lớp của chính giảng viên đó
@@ -73,8 +76,10 @@ async function fetchStudents(maLop) {
   const { data: studentData, error: studentError } = await supabase
     .from("tbl_hv")
     .select("*")
-    .eq("malop", maLop);
-
+    .eq("malop", maLop)
+	.neq("trangthai", "Đã Nghỉ")  // ⬅️ Chỉ lấy học viên chưa nghỉ
+    .order("tenhv", { ascending: true });  // ⬅️ sắp xếp theo tên
+	
   if (studentError) {
     console.error("Lỗi tải học viên:", studentError.message);
     return;
@@ -94,28 +99,41 @@ async function fetchStudents(maLop) {
     console.error("Lỗi lấy điểm danh:", diemDanhError.message);
   }
 
-  const attendanceMap = {};
-  const notesMap = {};
+	  const today = new Date();
+	today.setHours(0, 0, 0, 0); // reset về 00:00 hôm nay
 
-  // Chỉ lấy bản ghi mới nhất mỗi học viên
-  const seen = new Set();
+	const attendanceMap = {};
+	const notesMap = {};
 
-  for (const record of diemDanhData || []) {
-    if (!seen.has(record.mahv)) {
-      attendanceMap[record.mahv] = record.trangthai || "Có mặt";
-      notesMap[record.mahv] = record.ghichu || "";
-      seen.add(record.mahv);
-    }
-  }
+	const seenToday = new Set();
+	const seenBefore = new Set();
 
-  // Gán mặc định nếu không có bản ghi
-  for (const s of studentData) {
-    if (!attendanceMap[s.mahv]) attendanceMap[s.mahv] = "Có mặt";
-    if (!notesMap[s.mahv]) notesMap[s.mahv] = "";
-  }
+	for (const record of diemDanhData || []) {
+	  const recordDate = new Date(record.ngay);
+	  recordDate.setHours(0, 0, 0, 0); // so sánh theo ngày, bỏ giờ
 
-  setAttendance(attendanceMap);
-  setNotes(notesMap);
+	  const isToday = recordDate.getTime() === today.getTime();
+	  const mahv = record.mahv;
+
+	  if (isToday && !seenToday.has(mahv)) {
+		attendanceMap[mahv] = record.trangthai || "Có mặt";
+		notesMap[mahv] = record.ghichu || "";
+		seenToday.add(mahv);
+	  } else if (!isToday && !seenToday.has(mahv) && !seenBefore.has(mahv)) {
+		// chỉ lấy ghi chú gần nhất nếu không có bản ghi hôm nay
+		notesMap[mahv] = record.ghichu || "";
+		seenBefore.add(mahv);
+	  }
+	}
+
+	// Gán mặc định nếu chưa có dữ liệu
+	for (const s of studentData) {
+	  if (!attendanceMap[s.mahv]) attendanceMap[s.mahv] = "Có mặt";
+	  if (!notesMap[s.mahv]) notesMap[s.mahv] = "";
+	}
+
+	setAttendance(attendanceMap);
+	setNotes(notesMap);
 }
 
   // Toggle điểm danh
@@ -138,7 +156,7 @@ function handleAttendanceChange(mahv, status) {
 
   const { data, error } = await supabase
     .from("tbl_diemdanh")
-    .upsert(payload, { onConflict: ["mahv", "ngay"] });
+    .upsert(payload, { onConflict: "mahv,ngay" });
 
   if (error) {
     alert("Lỗi lưu điểm danh: " + error.message);
