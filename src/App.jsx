@@ -203,45 +203,82 @@ function App() {
 
   return (
     <div style={{ padding: "30px", maxWidth: "720px", margin: "40px auto" }}>
-      {!loggedIn ? (
-        <div style={boxStyle}>
-          <h2 style={{ textAlign: "center", color: "#2c3e50" }}>
-            🔐 Đăng nhập điểm danh
-          </h2>
+    {!loggedIn ? (
+      <div style={{
+        backgroundColor: "#f4f6f8",
+        borderRadius: "12px",
+        padding: "30px",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
+      }}>
+        <h2 style={{
+          textAlign: "center",
+          color: "#2c3e50",
+          marginBottom: "24px"
+        }}>🔐 Đăng nhập điểm danh</h2>
+        {/* Username input */}
+        <div style={{ marginBottom: "16px" }}>
+          <label style={{ display: "block", fontWeight: "500", marginBottom: "6px", color: "#34495e" }}>
+            Tên đăng nhập:
+          </label>
           <input
             type="text"
-            placeholder="Tên đăng nhập"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            style={{ width: "100%", margin: "10px 0", padding: "10px" }}
-          />
-          <input
-            type="password"
-            placeholder="Mật khẩu"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            style={{ width: "100%", margin: "10px 0", padding: "10px" }}
-          />
-          <button
-            onClick={handleLogin}
+            placeholder="Nhập tên đăng nhập"
             style={{
               width: "100%",
-              padding: "12px",
-              backgroundColor: "#3498db",
-              color: "#fff",
-              border: "none",
+              padding: "10px",
               borderRadius: "6px",
-              fontWeight: "600",
+              border: "1px solid #ccc",
+              outlineColor: "#3498db"
             }}
-          >
-            Đăng nhập
-          </button>
+          />
         </div>
+
+        {/* Password input */}
+        <div style={{ marginBottom: "16px" }}>
+          <label style={{ display: "block", fontWeight: "500", marginBottom: "6px", color: "#34495e" }}>
+            Mật khẩu:
+          </label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Nhập mật khẩu"
+            style={{
+              width: "100%",
+              padding: "10px",
+              borderRadius: "6px",
+              border: "1px solid #ccc",
+              outlineColor: "#3498db"
+            }}
+          />
+        </div>
+
+        <button
+          onClick={handleLogin}
+          style={{
+            width: "100%",
+            padding: "12px",
+            backgroundColor: "#3498db",
+            color: "#fff",
+            border: "none",
+            borderRadius: "6px",
+            fontWeight: "600",
+            cursor: "pointer",
+            transition: "background-color 0.3s"
+          }}
+          onMouseOver={(e) => (e.target.style.backgroundColor = "#2980b9")}
+          onMouseOut={(e) => (e.target.style.backgroundColor = "#3498db")}
+        >
+          Đăng nhập
+        </button>
+      </div>
       ) : (
         <>
           {/* PHẦN 1 */}
           <div style={boxStyle}>
-            <h2 style={{ color: "#2c3e50" }}>📘 Phần 1: Chọn lớp & điểm danh</h2>
+            <h2 style={{ color: "#2c3e50" }}>📘 Điểm danh theo lớp</h2>
             <select
               value={selectedLop}
               onChange={(e) => setSelectedLop(e.target.value)}
@@ -334,7 +371,7 @@ function App() {
 
           {/* PHẦN 2 */}
           <div style={boxStyle}>
-            <h2 style={{ color: "#2c3e50" }}>🔎 Phần 2: Tìm theo tên HV</h2>
+            <h2 style={{ color: "#2c3e50" }}>🔎 Điểm danh theo tên HV</h2>
             <input
               type="text"
               placeholder="Nhập tên học viên..."
@@ -420,7 +457,7 @@ function App() {
 
           {/* PHẦN 3 */}
           <div style={boxStyle}>
-            <h2 style={{ color: "#2c3e50" }}>💳 Phần 3: Điểm danh theo mã HV</h2>
+            <h2 style={{ color: "#2c3e50" }}>💳 Điểm danh theo mã HV</h2>
             <div style={{ display: "flex", gap: "10px" }}>
               <input
                 type="text"
