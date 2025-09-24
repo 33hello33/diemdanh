@@ -276,97 +276,153 @@ function App() {
       </div>
       ) : (
         <>
-          {/* PHẦN 1 */}
-          <div style={boxStyle}>
-            <h2 style={{ color: "#2c3e50" }}>📘 Điểm danh theo lớp</h2>
-            <select
-              value={selectedLop}
-              onChange={(e) => setSelectedLop(e.target.value)}
-              style={{ width: "100%", padding: "10px", margin: "10px 0" }}
-            >
-              <option value="">-- Chọn lớp --</option>
-              {lopList.map((lop) => (
-                <option key={lop.malop} value={lop.malop}>
-                  {lop.tenlop}
-                </option>
-              ))}
-            </select>
-            <button
-              onClick={() => selectedLop && fetchStudents(selectedLop)}
+           {/* Dropdown chọn lớp */}
+        <div style={{ marginBottom: "20px" }}>
+          <label style={{ display: "block", fontWeight: "500", marginBottom: "6px", color: "#34495e" }}>
+            Điểm danh theo lớp:
+          </label>
+          <select
+            value={selectedLop}
+            onChange={(e) => setSelectedLop(e.target.value)}
+            style={{
+              width: "100%",
+              padding: "10px",
+              borderRadius: "6px",
+              border: "1px solid #ccc",
+              backgroundColor: "#fff"
+            }}
+          >
+            <option value="">-- Chọn lớp --</option>
+            {lopList.map((lop) => (
+              <option key={lop.malop} value={lop.malop}>
+                {lop.tenlop}
+              </option>
+            ))}
+          </select>
+        </div>
+		    <button
+          onClick={() => {
+  if (selectedLop) fetchStudents(selectedLop);
+  else alert("Vui lòng chọn lớp trước khi tải danh sách.");
+}}
+          style={{
+            width: "100%",
+            padding: "12px",
+            backgroundColor: "#3498db",
+            color: "#fff",
+            border: "none",
+            borderRadius: "6px",
+            fontWeight: "600",
+            cursor: "pointer",
+            transition: "background-color 0.3s"
+          }}
+          onMouseOver={(e) => (e.target.style.backgroundColor = "#2980b9")}
+          onMouseOut={(e) => (e.target.style.backgroundColor = "#3498db")}
+        >
+          Tải danh sách lớp
+        </button>
+		
+        <h2 style={{ textAlign: "center", color: "#2c3e50", marginBottom: 20 }}>📋 Danh sách điểm danh</h2>
+		  <p>Tổng số học viên: {soLuongHocVien}</p>
+        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+          {students.map((student) => (
+            <div
+              key={student.mahv}
               style={{
-                width: "100%",
-                padding: "10px",
-                backgroundColor: "#3498db",
-                color: "#fff",
-                border: "none",
-                borderRadius: "6px",
-                fontWeight: "600",
+                padding: "16px",
+                borderRadius: "10px",
+                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+                backgroundColor: "#f9f9f9",
+                transition: "0.3s",
+                borderLeft: "5px solid #3498db"
               }}
             >
-              Tải danh sách lớp
-            </button>
-
-            <p>Tổng số học viên: {soLuongHocVien}</p>
-            {students.map((s) => (
-              <div key={s.mahv} style={{ marginBottom: "12px" }}>
-                <b>{s.tenhv}</b>
-                <div>
-                  <label>
-                    <input
-                      type="radio"
-                      checked={attendance[s.mahv] === "Có mặt"}
-                      onChange={() => handleAttendanceChange(s.mahv, "Có mặt")}
-                    />
-                    Có mặt
-                  </label>
-                  <label>
-                    <input
-                      type="radio"
-                      checked={attendance[s.mahv] === "Nghỉ phép"}
-                      onChange={() =>
-                        handleAttendanceChange(s.mahv, "Nghỉ phép")
-                      }
-                    />
-                    Nghỉ phép
-                  </label>
-                  <label>
-                    <input
-                      type="radio"
-                      checked={attendance[s.mahv] === "Nghỉ không phép"}
-                      onChange={() =>
-                        handleAttendanceChange(s.mahv, "Nghỉ không phép")
-                      }
-                    />
-                    Nghỉ KP
-                  </label>
-                </div>
-                <input
-                  type="text"
-                  placeholder="Ghi chú..."
-                  value={notes[s.mahv] || ""}
-                  onChange={(e) =>
-                    setNotes((prev) => ({ ...prev, [s.mahv]: e.target.value }))
-                  }
-                />
+              <div style={{ fontWeight: "600", fontSize: "16px", marginBottom: "8px", color: "#34495e" }}>
+                {student.tenhv}
               </div>
-            ))}
-            {students.length > 0 && (
-              <button
-                onClick={handleSubmit}
-                style={{
-                  width: "100%",
-                  marginTop: "10px",
-                  padding: "10px",
-                  backgroundColor: "#2ecc71",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: "6px",
-                  fontWeight: "600",
-                }}
-              >
-                ✅ Lưu điểm danh lớp
-              </button>
-            )}
+              <div style={{ display: "flex", gap: "20px", fontSize: "14px" }}>
+                <label style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <input
+                    type="radio"
+                    name={`attendance-${student.mahv}`}
+                    value="Có mặt"
+                    checked={attendance[student.mahv] === "Có mặt"}
+                    onChange={() => handleAttendanceChange(student.mahv, "Có mặt")}
+                    style={{ accentColor: "#27ae60" }}
+                  />
+                  Có mặt ✅
+                </label>
+
+                <label style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <input
+                    type="radio"
+                    name={`attendance-${student.mahv}`}
+                    value="Nghỉ phép"
+                    checked={attendance[student.mahv] === "Nghỉ phép"}
+                    onChange={() => handleAttendanceChange(student.mahv, "Nghỉ phép")}
+                    style={{ accentColor: "#f39c12" }}
+                  />
+                  Nghỉ phép 🟡
+                </label>
+
+                <label style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <input
+                    type="radio"
+                    name={`attendance-${student.mahv}`}
+                    value="Nghỉ không phép"
+                    checked={attendance[student.mahv] === "Nghỉ không phép"}
+                    onChange={() => handleAttendanceChange(student.mahv, "Nghỉ không phép")}
+                    style={{ accentColor: "#e74c3c" }}
+                  />
+                  Nghỉ không phép ❌
+                </label>
+              </div>
+			  <div style={{ marginTop: "10px" }}>
+  <label style={{ fontSize: "13px", color: "#555" }}>
+    Ghi chú:
+    <input
+      type="text"
+      placeholder="Nhập ghi chú nếu có..."
+      value={notes[student.mahv] || ""}
+      onChange={(e) =>
+        setNotes((prev) => ({
+          ...prev,
+          [student.mahv]: e.target.value
+        }))
+      }
+      style={{
+        width: "100%",
+        marginTop: "4px",
+        padding: "6px 8px",
+        borderRadius: "6px",
+        border: "1px solid #ccc",
+        fontSize: "14px"
+      }}
+    />
+  </label>
+</div>
+            </div>
+          ))}
+        </div>
+
+        <button
+          onClick={handleSubmit}
+          style={{
+            marginTop: 24,
+            padding: "12px 24px",
+            backgroundColor: "#2ecc71",
+            color: "#fff",
+            border: "none",
+            borderRadius: "6px",
+            fontWeight: "600",
+            cursor: "pointer"
+          }}
+        >
+          ✅ Lưu điểm danh
+        </button>
+      </>
+    )}
+  
           </div>
 
           {/* PHẦN 2 */}
