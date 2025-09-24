@@ -18,11 +18,22 @@ function App() {
   const [soLuongHocVien, setSoLuongHocVien] = useState(0);
   const [notes, setNotes] = useState({});
 
-  // thêm state tìm kiếm
+  // --- phần 2: tìm theo tên ---
   const [searchName, setSearchName] = useState("");
-  const [searchMahv, setSearchMahv] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchNotes, setSearchNotes] = useState({});
+  const [searchAttendance, setSearchAttendance] = useState({});
 
-  // lấy danh sách lớp
+  // --- phần 3: tìm theo mã ---
+  const [searchMahv, setSearchMahv] = useState("");
+  const [mahvResult, setMahvResult] = useState(null);
+  const [mahvAttendance, setMahvAttendance] = useState("");
+  const [mahvNote, setMahvNote] = useState("");
+
+  // ----------------------------
+  // PHẦN 1: LOGIN + CHỌN LỚP
+  // ----------------------------
+
   async function fetchLopList(manv, role) {
     let query = supabase
       .from("tbl_lop")
@@ -34,27 +45,14 @@ function App() {
     }
 
     const { data, error } = await query;
-
-    if (error) {
-      console.error("Lỗi tải danh sách lớp:", error.message);
-    } else {
-      setLopList(data);
-    }
+    if (!error) setLopList(data);
   }
 
   useEffect(() => {
-    if (manv && role) {
-      fetchLopList(manv, role);
-    }
+    if (manv && role) fetchLopList(manv, role);
   }, [manv, role]);
 
-  // đăng nhập
   async function handleLogin() {
-    if (!username || !password) {
-      alert("Vui lòng điền đầy đủ thông tin đăng nhập.");
-      return;
-    }
-
     const { data, error } = await supabase
       .from("tbl_nv")
       .select("*")
@@ -63,111 +61,33 @@ function App() {
       .single();
 
     if (error || !data) {
-      alert("Sai tên đăng nhập hoặc mật khẩu.");
-    } else {
-      setManv(data.manv);
-      setRole(data.role);
-      setLoggedIn(true);
-      fetchLopList(data.manv, data.role);
+      alert("Sai tài khoản hoặc mật khẩu!");
+      return;
     }
+    setManv(data.manv);
+    setRole(data.role);
+    setLoggedIn(true);
+    fetchLopList(data.manv, data.role);
   }
 
-  // lấy học viên theo lớp
   async function fetchStudents(maLop) {
-    const { data: studentData, error: studentError } = await supabase
+    const { data } = await supabase
       .from("tbl_hv")
       .select("*")
       .eq("malop", maLop)
       .neq("trangthai", "Đã Nghỉ")
       .order("tenhv", { ascending: true });
 
-    if (studentError) {
-      console.error("Lỗi tải học viên:", studentError.message);
-      return;
-    }
-
-    setStudents(studentData);
-    setSoLuongHocVien(studentData.length);
-
-    // lấy trạng thái điểm danh gần nhất
-    const { data: diemDanhData, error: diemDanhError } = await supabase
-      .from("tbl_diemdanh")
-      .select("mahv, trangthai, ghichu, ngay")
-      .in("mahv", studentData.map((s) => s.mahv))
-      .order("ngay", { ascending: false });
-
-    if (diemDanhError) {
-      console.error("Lỗi lấy điểm danh:", diemDanhError.message);
-    }
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const attendanceMap = {};
-    const notesMap = {};
-    const seenToday = new Set();
-    const seenBefore = new Set();
-
-    for (const record of diemDanhData || []) {
-      const recordDate = new Date(record.ngay);
-      recordDate.setHours(0, 0, 0, 0);
-      const isToday = recordDate.getTime() === today.getTime();
-      const mahv = record.mahv;
-
-      if (isToday && !seenToday.has(mahv)) {
-        attendanceMap[mahv] = record.trangthai || "Có mặt";
-        notesMap[mahv] = record.ghichu || "";
-        seenToday.add(mahv);
-      } else if (
-        !isToday &&
-        !seenToday.has(mahv) &&
-        !seenBefore.has(mahv)
-      ) {
-        notesMap[mahv] = record.ghichu || "";
-        seenBefore.add(mahv);
-      }
-    }
-
-    for (const s of studentData) {
-      if (!attendanceMap[s.mahv]) attendanceMap[s.mahv] = "Có mặt";
-      if (!notesMap[s.mahv]) notesMap[s.mahv] = "";
-    }
-
-    setAttendance(attendanceMap);
-    setNotes(notesMap);
+    setStudents(data || []);
+    setSoLuongHocVien(data?.length || 0);
+    setAttendance({});
+    setNotes({});
   }
 
-  // tìm học viên theo mã (nếu không chọn lớp)
-  async function fetchStudentByMahv(mahv) {
-    if (!mahv) return;
-
-    const { data, error } = await supabase
-      .from("tbl_hv")
-      .select("*")
-      .eq("mahv", mahv)
-      .neq("trangthai", "Đã Nghỉ")
-      .single();
-
-    if (error || !data) {
-      alert("❌ Không tìm thấy học viên với mã: " + mahv);
-      return;
-    }
-
-    setStudents([data]);
-    setSoLuongHocVien(1);
-    setAttendance({ [data.mahv]: "Có mặt" });
-    setNotes({ [data.mahv]: "" });
-  }
-
-  // toggle điểm danh
   function handleAttendanceChange(mahv, status) {
-    setAttendance((prev) => ({
-      ...prev,
-      [mahv]: status,
-    }));
+    setAttendance((prev) => ({ ...prev, [mahv]: status }));
   }
 
-  // lưu điểm danh
   async function handleSubmit() {
     const today = new Date().toISOString().split("T")[0];
     const payload = students.map((s) => ({
@@ -181,136 +101,165 @@ function App() {
       .from("tbl_diemdanh")
       .upsert(payload, { onConflict: "mahv,ngay" });
 
-    if (error) {
-      alert("Lỗi lưu điểm danh: " + error.message);
-    } else {
-      alert("✅ Điểm danh đã được lưu thành công!");
-    }
+    alert(error ? "❌ Lỗi lưu điểm danh!" : "✅ Đã lưu thành công!");
   }
 
-  // lọc theo tên
-  const filteredStudents = students.filter((s) =>
-    s.tenhv.toLowerCase().includes(searchName.toLowerCase())
-  );
+  // ----------------------------
+  // PHẦN 2: TÌM THEO TÊN
+  // ----------------------------
 
+  useEffect(() => {
+    const delayDebounce = setTimeout(async () => {
+      if (!searchName) {
+        setSearchResults([]);
+        return;
+      }
+      const { data } = await supabase
+        .from("tbl_hv")
+        .select("*")
+        .ilike("tenhv", `%${searchName}%`)
+        .neq("trangthai", "Đã Nghỉ")
+        .limit(10);
+
+      setSearchResults(data || []);
+      const attMap = {};
+      const noteMap = {};
+      (data || []).forEach((s) => {
+        attMap[s.mahv] = "Có mặt";
+        noteMap[s.mahv] = "";
+      });
+      setSearchAttendance(attMap);
+      setSearchNotes(noteMap);
+    }, 200);
+
+    return () => clearTimeout(delayDebounce);
+  }, [searchName]);
+
+  async function handleSearchSubmit() {
+    const today = new Date().toISOString().split("T")[0];
+    const payload = searchResults.map((s) => ({
+      mahv: s.mahv,
+      ngay: today,
+      trangthai: searchAttendance[s.mahv],
+      ghichu: searchNotes[s.mahv] || "",
+    }));
+
+    const { error } = await supabase
+      .from("tbl_diemdanh")
+      .upsert(payload, { onConflict: "mahv,ngay" });
+
+    alert(error ? "❌ Lỗi lưu!" : "✅ Đã lưu!");
+  }
+
+  // ----------------------------
+  // PHẦN 3: TÌM THEO MÃ HV
+  // ----------------------------
+
+  async function fetchStudentByMahv(mahv) {
+    if (!mahv) return;
+    const { data, error } = await supabase
+      .from("tbl_hv")
+      .select("*")
+      .eq("mahv", mahv)
+      .neq("trangthai", "Đã Nghỉ")
+      .single();
+
+    if (error || !data) {
+      alert("❌ Không tìm thấy HV");
+      setMahvResult(null);
+      return;
+    }
+    setMahvResult(data);
+    setMahvAttendance("Có mặt");
+    setMahvNote("");
+  }
+
+  async function handleMahvSubmit() {
+    if (!mahvResult) return;
+    const today = new Date().toISOString().split("T")[0];
+    const payload = [
+      {
+        mahv: mahvResult.mahv,
+        ngay: today,
+        trangthai: mahvAttendance,
+        ghichu: mahvNote,
+      },
+    ];
+    const { error } = await supabase
+      .from("tbl_diemdanh")
+      .upsert(payload, { onConflict: "mahv,ngay" });
+
+    alert(error ? "❌ Lỗi lưu!" : "✅ Đã lưu!");
+  }
+
+  // ----------------------------
+  // GIAO DIỆN
+  // ----------------------------
   return (
     <div style={{ padding: "30px", maxWidth: "720px", margin: "40px auto" }}>
       {!loggedIn ? (
-        <div
-          style={{
-            backgroundColor: "#f4f6f8",
-            borderRadius: "12px",
-            padding: "30px",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-          }}
-        >
-          <h2
-            style={{
-              textAlign: "center",
-              color: "#2c3e50",
-              marginBottom: "24px",
-            }}
-          >
-            🔐 Đăng nhập điểm danh
-          </h2>
+        // ----------------------
+        // LOGIN
+        // ----------------------
+        <div>
+          <h2>🔐 Đăng nhập điểm danh</h2>
           <input
             type="text"
+            placeholder="Tên đăng nhập"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            placeholder="Tên đăng nhập"
           />
           <input
             type="password"
+            placeholder="Mật khẩu"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Mật khẩu"
           />
           <button onClick={handleLogin}>Đăng nhập</button>
         </div>
       ) : (
         <>
-          {/* chọn lớp */}
-          <div style={{ marginBottom: "20px" }}>
-            <label>Chọn lớp:</label>
-            <select
-              value={selectedLop}
-              onChange={(e) => setSelectedLop(e.target.value)}
-            >
-              <option value="">-- Chọn lớp --</option>
-              {lopList.map((lop) => (
-                <option key={lop.malop} value={lop.malop}>
-                  {lop.tenlop}
-                </option>
-              ))}
-            </select>
-          </div>
+          {/* ----------------------
+              PHẦN 1: CHỌN LỚP
+          ---------------------- */}
+          <h2>📘 Phần 1: Chọn lớp & điểm danh</h2>
+          <select
+            value={selectedLop}
+            onChange={(e) => setSelectedLop(e.target.value)}
+          >
+            <option value="">-- Chọn lớp --</option>
+            {lopList.map((lop) => (
+              <option key={lop.malop} value={lop.malop}>
+                {lop.tenlop}
+              </option>
+            ))}
+          </select>
           <button
             onClick={() => {
               if (selectedLop) fetchStudents(selectedLop);
-              else alert("Vui lòng chọn lớp trước khi tải danh sách.");
             }}
           >
             Tải danh sách lớp
           </button>
 
-          {/* tìm kiếm theo tên */}
-          <div style={{ marginTop: "20px" }}>
-            <label>Tìm theo tên học viên:</label>
-            <input
-              type="text"
-              value={searchName}
-              onChange={(e) => setSearchName(e.target.value)}
-              placeholder="Nhập tên học viên..."
-            />
-          </div>
-
-          {/* tìm theo mã hv */}
-          <div style={{ marginTop: "20px" }}>
-            <label>Điểm danh theo mã học viên:</label>
-            <input
-              type="text"
-              value={searchMahv}
-              onChange={(e) => setSearchMahv(e.target.value)}
-              placeholder="Nhập mã học viên..."
-            />
-            <button onClick={() => fetchStudentByMahv(searchMahv)}>Tìm</button>
-          </div>
-
-          <h2>📋 Danh sách điểm danh</h2>
-          <p>Tổng số học viên: {soLuongHocVien}</p>
-
-          {filteredStudents.map((student) => (
-            <div
-              key={student.mahv}
-              style={{
-                padding: "12px",
-                border: "1px solid #ddd",
-                borderRadius: "6px",
-                marginBottom: "10px",
-              }}
-            >
-              <b>{student.tenhv}</b> ({student.mahv})
+          {students.map((s) => (
+            <div key={s.mahv}>
+              <b>{s.tenhv}</b>
               <div>
                 <label>
                   <input
                     type="radio"
-                    name={`attendance-${student.mahv}`}
-                    value="Có mặt"
-                    checked={attendance[student.mahv] === "Có mặt"}
-                    onChange={() =>
-                      handleAttendanceChange(student.mahv, "Có mặt")
-                    }
+                    checked={attendance[s.mahv] === "Có mặt"}
+                    onChange={() => handleAttendanceChange(s.mahv, "Có mặt")}
                   />
                   Có mặt
                 </label>
                 <label>
                   <input
                     type="radio"
-                    name={`attendance-${student.mahv}`}
-                    value="Nghỉ phép"
-                    checked={attendance[student.mahv] === "Nghỉ phép"}
+                    checked={attendance[s.mahv] === "Nghỉ phép"}
                     onChange={() =>
-                      handleAttendanceChange(student.mahv, "Nghỉ phép")
+                      handleAttendanceChange(s.mahv, "Nghỉ phép")
                     }
                   />
                   Nghỉ phép
@@ -318,31 +267,150 @@ function App() {
                 <label>
                   <input
                     type="radio"
-                    name={`attendance-${student.mahv}`}
-                    value="Nghỉ không phép"
-                    checked={attendance[student.mahv] === "Nghỉ không phép"}
+                    checked={attendance[s.mahv] === "Nghỉ không phép"}
                     onChange={() =>
-                      handleAttendanceChange(student.mahv, "Nghỉ không phép")
+                      handleAttendanceChange(s.mahv, "Nghỉ không phép")
                     }
                   />
-                  Nghỉ không phép
+                  Nghỉ KP
                 </label>
               </div>
               <input
                 type="text"
                 placeholder="Ghi chú..."
-                value={notes[student.mahv] || ""}
+                value={notes[s.mahv] || ""}
                 onChange={(e) =>
-                  setNotes((prev) => ({
+                  setNotes((prev) => ({ ...prev, [s.mahv]: e.target.value }))
+                }
+              />
+            </div>
+          ))}
+          {students.length > 0 && (
+            <button onClick={handleSubmit}>✅ Lưu điểm danh lớp</button>
+          )}
+
+          {/* ----------------------
+              PHẦN 2: TÌM THEO TÊN
+          ---------------------- */}
+          <h2 style={{ marginTop: 40 }}>🔎 Phần 2: Tìm theo tên HV</h2>
+          <input
+            type="text"
+            placeholder="Nhập tên học viên..."
+            value={searchName}
+            onChange={(e) => setSearchName(e.target.value)}
+          />
+          {searchResults.map((s) => (
+            <div key={s.mahv}>
+              <b>{s.tenhv}</b>
+              <div>
+                <label>
+                  <input
+                    type="radio"
+                    checked={searchAttendance[s.mahv] === "Có mặt"}
+                    onChange={() =>
+                      setSearchAttendance((prev) => ({
+                        ...prev,
+                        [s.mahv]: "Có mặt",
+                      }))
+                    }
+                  />
+                  Có mặt
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    checked={searchAttendance[s.mahv] === "Nghỉ phép"}
+                    onChange={() =>
+                      setSearchAttendance((prev) => ({
+                        ...prev,
+                        [s.mahv]: "Nghỉ phép",
+                      }))
+                    }
+                  />
+                  Nghỉ phép
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    checked={searchAttendance[s.mahv] === "Nghỉ không phép"}
+                    onChange={() =>
+                      setSearchAttendance((prev) => ({
+                        ...prev,
+                        [s.mahv]: "Nghỉ không phép",
+                      }))
+                    }
+                  />
+                  Nghỉ KP
+                </label>
+              </div>
+              <input
+                type="text"
+                placeholder="Ghi chú..."
+                value={searchNotes[s.mahv] || ""}
+                onChange={(e) =>
+                  setSearchNotes((prev) => ({
                     ...prev,
-                    [student.mahv]: e.target.value,
+                    [s.mahv]: e.target.value,
                   }))
                 }
               />
             </div>
           ))}
+          {searchResults.length > 0 && (
+            <button onClick={handleSearchSubmit}>✅ Lưu điểm danh tìm tên</button>
+          )}
 
-          <button onClick={handleSubmit}>✅ Lưu điểm danh</button>
+          {/* ----------------------
+              PHẦN 3: TÌM THEO MÃ HV
+          ---------------------- */}
+          <h2 style={{ marginTop: 40 }}>💳 Phần 3: Điểm danh theo mã HV</h2>
+          <input
+            type="text"
+            placeholder="Nhập mã học viên..."
+            value={searchMahv}
+            onChange={(e) => setSearchMahv(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && fetchStudentByMahv(searchMahv)}
+          />
+          <button onClick={() => fetchStudentByMahv(searchMahv)}>Tìm</button>
+
+          {mahvResult && (
+            <div style={{ marginTop: 10 }}>
+              <b>{mahvResult.tenhv}</b> ({mahvResult.mahv})
+              <div>
+                <label>
+                  <input
+                    type="radio"
+                    checked={mahvAttendance === "Có mặt"}
+                    onChange={() => setMahvAttendance("Có mặt")}
+                  />
+                  Có mặt
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    checked={mahvAttendance === "Nghỉ phép"}
+                    onChange={() => setMahvAttendance("Nghỉ phép")}
+                  />
+                  Nghỉ phép
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    checked={mahvAttendance === "Nghỉ không phép"}
+                    onChange={() => setMahvAttendance("Nghỉ không phép")}
+                  />
+                  Nghỉ KP
+                </label>
+              </div>
+              <input
+                type="text"
+                placeholder="Ghi chú..."
+                value={mahvNote}
+                onChange={(e) => setMahvNote(e.target.value)}
+              />
+              <button onClick={handleMahvSubmit}>✅ Lưu điểm danh mã HV</button>
+            </div>
+          )}
         </>
       )}
     </div>
