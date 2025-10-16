@@ -100,7 +100,7 @@ function App() {
       trangthai: attendance[s.mahv],
       ghichu: notes[s.mahv] || "",
     }));
-
+console.log(payload);
     const { error } = await supabase
       .from("tbl_diemdanh")
       .upsert(payload, { onConflict: "mahv,ngay" });
