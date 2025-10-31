@@ -278,8 +278,8 @@ return (
               <div style={{ fontWeight: "600", fontSize: "16px", marginBottom: "8px", color: "#34495e" }}>
                 {student.tenhv}
               </div>
-              <div style={{ display: "flex", gap: "20px", fontSize: "14px" }}>
-                {["Có mặt","Nghỉ phép","Nghỉ không phép", "Trả trễ"].map(status => (
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", fontSize: "14px"}}>
+                {["Có mặt","Nghỉ phép","Nghỉ không phép", "Trả trễ 1", "Trả trễ 2", "Trả trễ 3"].map(status => (
                   <label key={status} style={{ display: "flex", alignItems: "center", gap: 6 }}>
                     <input
                       type="radio"
@@ -328,8 +328,8 @@ return (
               <div style={{ fontWeight: "600", fontSize: "16px", marginBottom: "8px", color: "#34495e" }}>
                 {s.tenhv}
               </div>
-              <div style={{ display: "flex", gap: "20px", fontSize: "14px" }}>
-                {["Có mặt","Nghỉ phép","Nghỉ không phép", "Trả trễ"].map(status => (
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", fontSize: "14px" }}>
+                {["Có mặt","Nghỉ phép","Nghỉ không phép", "Trả trễ 1", "Trả trễ 2","Trả trễ 3"].map(status => (
                   <label key={status}>
                     <input
                       type="radio"
@@ -387,7 +387,7 @@ return (
                 {mahvResult.tenhv} ({mahvResult.mahv})
               </div>
               <div style={{ display: "flex", gap: "20px", fontSize: "14px" }}>
-                {["Có mặt","Nghỉ phép","Nghỉ không phép", "Trả trễ"].map(status => (
+                {["Có mặt","Nghỉ phép","Nghỉ không phép", "Trả trễ 1","Trả trễ 2", "Trả trễ 3"].map(status => (
                   <label key={status}>
                     <input
                       type="radio"
