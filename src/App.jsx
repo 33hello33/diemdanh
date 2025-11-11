@@ -15,6 +15,7 @@ function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [manv, setManv] = useState(null);
   const [role, setRole] = useState("");
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split("T")[0]);
   const [soLuongHocVien, setSoLuongHocVien] = useState(0);
   const [notes, setNotes] = useState({});
 
@@ -93,10 +94,10 @@ function App() {
   }
 
   async function handleSubmit() {
-    const today = new Date().toISOString().split("T")[0];
+    const diemDanhNgay = selectedDate;
     const payload = students.map((s) => ({
       mahv: s.mahv,
-      ngay: today,
+      ngay: diemDanhNgay,
       trangthai: attendance[s.mahv],
       ghichu: notes[s.mahv] || "",
     }));
@@ -138,10 +139,10 @@ function App() {
   }, [searchName]);
 
   async function handleSearchSubmit() {
-    const today = new Date().toISOString().split("T")[0];
+    const diemDanhNgay = selectedDate;
     const payload = searchResults.map((s) => ({
       mahv: s.mahv,
-      ngay: today,
+      ngay: diemDanhNgay,
       trangthai: searchAttendance[s.mahv],
       ghichu: searchNotes[s.mahv] || "",
     }));
@@ -175,11 +176,11 @@ function App() {
 
   async function handleMahvSubmit() {
     if (!mahvResult) return;
-    const today = new Date().toISOString().split("T")[0];
+    const diemDanhNgay = selectedDate;
     const payload = [
       {
         mahv: mahvResult.mahv,
-        ngay: today,
+        ngay: diemDanhNgay,
         trangthai: mahvAttendance,
         ghichu: mahvNote,
       },
@@ -252,6 +253,12 @@ return (
         {/* ---------- PHẦN 1: LỚP ---------- */}
         <div style={boxStyle}>
           <h2 style={{ color: "#2c3e50" }}>📘 Điểm danh theo lớp</h2>
+          {role === "Quản lý" && (
+            <div style={{ margin: "12px 0" }}>
+              <label>📅 Chọn ngày điểm danh:</label>
+              <input type="date" value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)} style={{ marginLeft: "10px", padding: "6px" }} />
+            </div>
+          )}
           <select
             value={selectedLop}
             onChange={(e) => setSelectedLop(e.target.value)}
