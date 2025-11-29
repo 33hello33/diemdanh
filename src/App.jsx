@@ -357,6 +357,7 @@ function App() {
         tenhv: student.tenhv,      // tên học viên
         ghichu: note,            // ghi chú
         time: now,               // thời gian gửi
+        tinhtrang: 'Chưa làm',
       },
     ]);
 
