@@ -326,7 +326,7 @@ function App() {
                     Làm bài tập
                   </label>
                 </div>
-
+<div style={{ display: "flex", gap: "8px", marginTop: 6 }}>
                 <input
                   type="text"
                   placeholder="Ghi chú..."
@@ -336,6 +336,46 @@ function App() {
                   }
                   style={{ width: "100%", marginTop: 6, padding: "6px 8px", borderRadius: 6 }}
                 />
+  <button
+  onClick={async () => {
+    const note = notes[student.mahv]?.trim() || "";
+
+    if (note === "") {
+      alert("⚠️ Vui lòng nhập ghi chú trước khi gửi cảnh báo!");
+      return;
+    }
+
+    const now = new Date().toISOString();
+
+    const { error } = await supabase.from("tbl_alert").insert([
+      {
+        tennv: username,         // tên giáo viên
+        mahv: student.mahv,      // mã học viên
+        ghichu: note,            // ghi chú
+        time: now,               // thời gian gửi
+      },
+    ]);
+
+    if (error) {
+      alert("❌ Có lỗi khi gửi cảnh báo!");
+    } else {
+      alert("🔴 Cảnh báo đã được gửi!");
+    }
+  }}
+  style={{
+    backgroundColor: "#e74c3c",
+    color: "white",
+    border: "none",
+    padding: "8px 12px",
+    borderRadius: 6,
+    cursor: "pointer",
+    fontSize: "18px",
+  }}
+>
+  ⚠️
+</button>
+
+  </div>
               </div>
             ))}
 
