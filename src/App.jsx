@@ -350,7 +350,7 @@ function App() {
     const { error } = await supabase.from("tbl_alert").insert([
       {
         tennv: username,         // tên giáo viên
-        mahv: student.tenhv,      // mã học viên
+        tenhv: student.tenhv,      // tên học viên
         ghichu: note,            // ghi chú
         time: now,               // thời gian gửi
       },
