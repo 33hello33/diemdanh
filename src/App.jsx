@@ -252,7 +252,7 @@ function App() {
           manv: manv,
           mahv: student.mahv,
           ghichu: notes[student.mahv] || "",
-          ngaygio: now,
+          time: now,
         },
       ]);
 
