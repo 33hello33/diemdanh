@@ -63,6 +63,51 @@ function App() {
     fetchLopList(data.manv, data.role);
   }
 
+  // --- load today's saved attendance & notes ---
+  async function loadTodayData() {
+    const today = new Date().toISOString().split("T")[0];
+
+    const { data } = await supabase
+      .from("tbl_diemdanh")
+      .select("mahv, trangthai, ghichu")
+      .eq("ngay", today);
+
+    if (!data) return;
+
+    const newAttendance = { ...attendance };
+    const newNotes = { ...notes };
+    const newFlags = { ...checkFlags };
+
+    data.forEach((row) => {
+      if (newAttendance[row.mahv] !== undefined) {
+        newAttendance[row.mahv] = row.trangthai || "Có mặt";
+      }
+
+      if (newNotes[row.mahv] !== undefined) {
+        newNotes[row.mahv] = row.ghichu || "";
+      }
+
+      if (newFlags[row.mahv] !== undefined) {
+        const g = row.ghichu || "";
+        newFlags[row.mahv] = {
+          tot: g.includes("Tốt"),
+          tienbo: g.includes("Tiến bộ"),
+          coGang: g.includes("Có cố gắng"),
+          lamBaiTap: g.includes("Làm bài tập"),
+        };
+      }
+    });
+
+    setAttendance(newAttendance);
+    setNotes(newNotes);
+    setCheckFlags(newFlags);
+  }
+
+  // load when students loaded
+  useEffect(() => {
+    if (students.length > 0) loadTodayData();
+  }, [students]);
+
   async function fetchStudents(maLop) {
     const { data } = await supabase
       .from("tbl_hv")
