@@ -346,10 +346,13 @@ function App() {
     }
 
     const now = new Date().toISOString();
-
+    
+   //lấy tên lớp đúng
+    const currentLop = lopList.find(x => x.malop === selectedLop);
+    
     const { error } = await supabase.from("tbl_alert").insert([
       {
-        tenlop: lop.tenlop,
+        currentLop?.tenlop || "",
         tennv: username,         // tên giáo viên
         tenhv: student.tenhv,      // tên học viên
         ghichu: note,            // ghi chú
