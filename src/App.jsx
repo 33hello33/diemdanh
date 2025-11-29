@@ -352,7 +352,7 @@ function App() {
     
     const { error } = await supabase.from("tbl_alert").insert([
       {
-        currentLop?.tenlop || "",
+        tenlop: currentLop?.tenlop || "",
         tennv: username,         // tên giáo viên
         tenhv: student.tenhv,      // tên học viên
         ghichu: note,            // ghi chú
