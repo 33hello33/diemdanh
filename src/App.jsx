@@ -234,10 +234,11 @@ function App() {
             Đăng nhập
           </button>
 </div>
-                <input
-                  type="text"
-                  placeholder="Ghi chú..."
-                  value={notes[student.mahv] || ""}
+         <div style={{ display: "flex", gap: "8px", marginTop: "6px" }}>
+  <input
+    type="text"
+    placeholder="Ghi chú..."
+    value={notes[student.mahv] || ""}
     onChange={(e) =>
       setNotes((prev) => ({ ...prev, [student.mahv]: e.target.value }))
     }
@@ -249,13 +250,12 @@ function App() {
       const now = new Date().toISOString();
       const { error } = await supabase.from("tbl_alert").insert([
         {
-          manv: manv,
+          manv,
           mahv: student.mahv,
           ghichu: notes[student.mahv] || "",
           time: now,
         },
       ]);
-
       if (error) alert("❌ Lỗi gửi cảnh báo!");
       else alert("🔴 Đã gửi cảnh báo!");
     }}
@@ -271,7 +271,7 @@ function App() {
   >
     ⚠️
   </button>
-</div>..."
+</div>
                   value={notes[student.mahv] || ""}
                   onChange={(e) =>
                     setNotes((prev) => ({ ...prev, [student.mahv]: e.target.value }))
