@@ -1,4 +1,4 @@
-// Full updated App.jsx with checkboxes integrated
+// Clean fixed full App.jsx
 import React, { useEffect, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 
@@ -18,24 +18,11 @@ function App() {
   const [role, setRole] = useState("");
   const [soLuongHocVien, setSoLuongHocVien] = useState(0);
   const [notes, setNotes] = useState({});
-
   const [checkFlags, setCheckFlags] = useState({});
-
-  const [searchName, setSearchName] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
-  const [searchNotes, setSearchNotes] = useState({});
-  const [searchAttendance, setSearchAttendance] = useState({});
-
-  const [searchMahv, setSearchMahv] = useState("");
-  const [mahvResult, setMahvResult] = useState(null);
-  const [mahvAttendance, setMahvAttendance] = useState("");
-  const [mahvNote, setMahvNote] = useState("");
 
   async function fetchLopList(manv, role) {
     let query = supabase.from("tbl_lop").select("malop, tenlop").neq("daxoa", "Đã Xóa");
-
     if (role === "Giáo viên") query = query.eq("manv", manv);
-
     const { data } = await query;
     if (data) setLopList(data);
   }
@@ -62,51 +49,6 @@ function App() {
     setLoggedIn(true);
     fetchLopList(data.manv, data.role);
   }
-
-  // --- load today's saved attendance & notes ---
-  async function loadTodayData() {
-    const today = new Date().toISOString().split("T")[0];
-
-    const { data } = await supabase
-      .from("tbl_diemdanh")
-      .select("mahv, trangthai, ghichu")
-      .eq("ngay", today);
-
-    if (!data) return;
-
-    const newAttendance = { ...attendance };
-    const newNotes = { ...notes };
-    const newFlags = { ...checkFlags };
-
-    data.forEach((row) => {
-      if (newAttendance[row.mahv] !== undefined) {
-        newAttendance[row.mahv] = row.trangthai || "Có mặt";
-      }
-
-      if (newNotes[row.mahv] !== undefined) {
-        newNotes[row.mahv] = row.ghichu || "";
-      }
-
-      if (newFlags[row.mahv] !== undefined) {
-        const g = row.ghichu || "";
-        newFlags[row.mahv] = {
-          tot: g.includes("Tốt"),
-          tienbo: g.includes("Tiến bộ"),
-          coGang: g.includes("Có cố gắng"),
-          lamBaiTap: g.includes("Làm bài tập"),
-        };
-      }
-    });
-
-    setAttendance(newAttendance);
-    setNotes(newNotes);
-    setCheckFlags(newFlags);
-  }
-
-  // load when students loaded
-  useEffect(() => {
-    if (students.length > 0) loadTodayData();
-  }, [students]);
 
   async function fetchStudents(maLop) {
     const { data } = await supabase
@@ -138,6 +80,52 @@ function App() {
     setNotes(note);
     setCheckFlags(flags);
   }
+
+  async function loadTodayData() {
+    const today = new Date().toISOString().split("T")[0];
+    const { data } = await supabase
+      .from("tbl_diemdanh")
+      .select("mahv, trangthai, ghichu")
+      .eq("ngay", today);
+
+    if (!data) return;
+
+    setAttendance((prev) => {
+      const next = { ...prev };
+      data.forEach((r) => {
+        if (next[r.mahv] !== undefined) next[r.mahv] = r.trangthai || "Có mặt";
+      });
+      return next;
+    });
+
+    setNotes((prev) => {
+      const next = { ...prev };
+      data.forEach((r) => {
+        if (next[r.mahv] !== undefined) next[r.mahv] = r.ghichu || "";
+      });
+      return next;
+    });
+
+    setCheckFlags((prev) => {
+      const next = { ...prev };
+      data.forEach((r) => {
+        if (next[r.mahv] !== undefined) {
+          const g = r.ghichu || "";
+          next[r.mahv] = {
+            tot: g.includes("Tốt"),
+            tienbo: g.includes("Tiến bộ"),
+            coGang: g.includes("Có cố gắng"),
+            lamBaiTap: g.includes("Làm bài tập"),
+          };
+        }
+      });
+      return next;
+    });
+  }
+
+  useEffect(() => {
+    if (students.length > 0) loadTodayData();
+  }, [students]);
 
   function handleAttendanceChange(mahv, status) {
     setAttendance((prev) => ({ ...prev, [mahv]: status }));
@@ -189,59 +177,15 @@ function App() {
   return (
     <div style={{ padding: "30px", maxWidth: "720px", margin: "40px auto" }}>
       {!loggedIn ? (
-        <div
-          style={{
-            backgroundColor: "#f4f6f8",
-            borderRadius: "12px",
-            padding: "30px",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-          }}
-        >
-          <h2
-            style={{ textAlign: "center", color: "#2c3e50", marginBottom: "24px" }}
-          >
-            🔐 Đăng nhập điểm danh
-          </h2>
+        <div style={{ backgroundColor: "#f4f6f8", borderRadius: 12, padding: 30 }}>
+          <h2 style={{ textAlign: "center" }}>🔐 Đăng nhập điểm danh</h2>
 
-          <div style={{ marginBottom: "16px" }}>
-            <label style={{ display: "block", fontWeight: "500", marginBottom: 6 }}>
-              Tên đăng nhập:
-            </label>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              style={{ width: "100%", padding: 10, borderRadius: 6, border: "1px solid #ccc" }}
-            />
-          </div>
-
-          <div style={{ marginBottom: "16px" }}>
-            <label style={{ display: "block", fontWeight: 500, marginBottom: 6 }}>
-              Mật khẩu:
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              style={{ width: "100%", padding: 10, borderRadius: 6, border: "1px solid #ccc" }}
-            />
-          </div>
-
-          <button
-            onClick={handleLogin}
-            style={{ width: "100%", padding: 12, backgroundColor: "#3498db", color: "#fff", borderRadius: 6 }}
-          >
-            Đăng nhập
-          </button>
-</div>
-         <div style={{ display: "flex", gap: "8px", marginTop: "6px" }}>
+          <div style={{ display: "flex", gap: "8px", marginTop: 6 }}>
   <input
     type="text"
     placeholder="Ghi chú..."
     value={notes[student.mahv] || ""}
-    onChange={(e) =>
-      setNotes((prev) => ({ ...prev, [student.mahv]: e.target.value }))
-    }
+    onChange={(e) => setNotes((prev) => ({ ...prev, [student.mahv]: e.target.value }))}
     style={{ flex: 1, padding: "6px 8px", borderRadius: 6, border: "1px solid #ccc" }}
   />
 
@@ -250,10 +194,10 @@ function App() {
       const now = new Date().toISOString();
       const { error } = await supabase.from("tbl_alert").insert([
         {
-          manv,
+          manv: manv,
           mahv: student.mahv,
-          ghichu: notes[student.mahv] || "",
           time: now,
+          ghichu: notes[student.mahv] || "",
         },
       ]);
       if (error) alert("❌ Lỗi gửi cảnh báo!");
@@ -272,28 +216,23 @@ function App() {
     ⚠️
   </button>
 </div>
-                  value={notes[student.mahv] || ""}
-                  onChange={(e) =>
-                    setNotes((prev) => ({ ...prev, [student.mahv]: e.target.value }))
-                  }
-                  style={{ width: "100%", marginTop: 6, padding: "6px 8px", borderRadius: 6 }}
-                />
-              </div>
-            ))}
+          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} style={{ width: "100%", padding: 10, marginTop: 10 }} />
 
-            {students.length > 0 && (
-              <button
-                onClick={handleSubmit}
-                style={{ width: "100%", padding: 12, backgroundColor: "#2ecc71", color: "#fff", borderRadius: 6 }}
-              >
-                ✅ Lưu điểm danh lớp
-              </button>
-            )}
-          </div>
-        </>
-      )}
-    </div>
-  );
-}
+          <button onClick={handleLogin} style={{ width: "100%", padding: 12, marginTop: 10 }}>Đăng nhập</button>
+        </div>
+      ) : (
+        <>
+          <div style={boxStyle}>
+            <h2>📘 Điểm danh theo lớp</h2>
 
-export default App;
+            <select value={selectedLop} onChange={(e) => setSelectedLop(e.target.value)} style={{ width: "100%", padding: 10 }}>
+              <option value="">-- Chọn lớp --</option>
+              {lopList.map((lop) => (
+                <option key={lop.malop} value={lop.malop}>{lop.tenlop}</option>
+              ))}
+            </select>
+
+            <button onClick={() => (selectedLop ? fetchStudents(selectedLop) : alert("Chọn lớp"))} style={{ width: "100%", padding: 10, marginTop: 10 }}>Tải danh sách lớp</button>
+
+            {students.map((student) => (
+              <div key={student.mahv} style={{ background: "#fff", padding: 16, borderRadius: 10, marginTop: 10 }}>
