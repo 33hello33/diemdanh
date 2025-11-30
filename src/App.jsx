@@ -87,7 +87,37 @@ function App() {
     });
     setAttendance(att);
     setNotes(note);
+     // ⭐⭐ GỌI LOAD DỮ LIỆU ĐIỂM DANH HÔM NAY
+  await loadTodayData();
   }
+async function loadTodayData() {
+  const today = new Date().toISOString().split("T")[0];
+
+  const { data, error } = await supabase
+    .from("tbl_diemdanh")
+    .select("*")
+    .eq("ngay", today);
+
+  if (error || !data) return;
+
+  setAttendance((prev) => {
+    const updated = { ...prev };
+    data.forEach((row) => {
+      if (updated[row.mahv] !== undefined)
+        updated[row.mahv] = row.trangthai;
+    });
+    return updated;
+  });
+
+  setNotes((prev) => {
+    const updated = { ...prev };
+    data.forEach((row) => {
+      if (updated[row.mahv] !== undefined)
+        updated[row.mahv] = row.ghichu || "";
+    });
+    return updated;
+  });
+}
 
   function handleAttendanceChange(mahv, status) {
     setAttendance((prev) => ({ ...prev, [mahv]: status }));
