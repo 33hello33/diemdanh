@@ -113,7 +113,7 @@ function App() {
       .from("tbl_hv")
       .select("*")
       .eq("malop", maLop)
-      .neq("trangthai", "Đã Nghỉ")
+      .eq("trangthai", "Đang Học")
       .order("tenhv", { ascending: true });
 
     setStudents(data || []);
