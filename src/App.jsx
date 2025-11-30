@@ -89,10 +89,11 @@ function App() {
       if (newFlags[row.mahv] !== undefined) {
         const g = row.ghichu || "";
         newFlags[row.mahv] = {
-          tot: g.includes("Tốt"),
+          hoctot: g.includes("Học tốt"),
           tienbo: g.includes("Tiến bộ"),
-          coGang: g.includes("Có cố gắng"),
-          lamBaiTap: g.includes("Làm bài tập"),
+          khonglambai: g.includes("Không làm bài"),
+          chuachuy: g.includes("Chưa chú ý"),
+          dihoctre: g.includes("Đi học trễ"),
         };
       }
     });
@@ -126,10 +127,11 @@ function App() {
       att[s.mahv] = "Có mặt";
       note[s.mahv] = "";
       flags[s.mahv] = {
-        tot: false,
+        hoctot: false,
         tienbo: false,
-        coGang: false,
-        lamBaiTap: false,
+        khonglambai: false,
+        chuachuy: false,
+        dihoctre: false,
       };
     });
 
@@ -160,11 +162,11 @@ function App() {
       ngay: today,
       trangthai: attendance[s.mahv],
       ghichu: [
-        checkFlags[s.mahv]?.tot ? "Học tốt" : "",
+        checkFlags[s.mahv]?.hoctot ? "Học tốt" : "",
         checkFlags[s.mahv]?.tienbo ? "Tiến bộ" : "",
-        checkFlags[s.mahv]?.coGang ? "Không làm bài" : "",
-        checkFlags[s.mahv]?.lamBaiTap ? "Chưa chú ý" : "",
-        checkFlags[s.mahv]?.lamBaiTap ? "Đi học trễ" : "",
+        checkFlags[s.mahv]?.khonglambai ? "Không làm bài" : "",
+        checkFlags[s.mahv]?.chuachuy ? "Chưa chú ý" : "",
+        checkFlags[s.mahv]?.dihoctre ? "Đi học trễ" : "",
         notes[s.mahv] || "",
       ]
         .filter((x) => x !== "")
