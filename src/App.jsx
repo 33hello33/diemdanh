@@ -299,10 +299,10 @@ function App() {
                   <label>
                     <input
                       type="checkbox"
-                      checked={checkFlags[student.mahv]?.tot || false}
-                      onChange={() => handleCheckChange(student.mahv, "tot")}
+                      checked={checkFlags[student.mahv]?.hoctot || false}
+                      onChange={() => handleCheckChange(student.mahv, "hoctot")}
                     />
-                    Tốt
+                    Học tốt
                   </label>
                   <label>
                     <input
@@ -315,18 +315,26 @@ function App() {
                   <label>
                     <input
                       type="checkbox"
-                      checked={checkFlags[student.mahv]?.coGang || false}
-                      onChange={() => handleCheckChange(student.mahv, "coGang")}
+                      checked={checkFlags[student.mahv]?.khonglambai || false}
+                      onChange={() => handleCheckChange(student.mahv, "khonglambai")}
                     />
-                    Có cố gắng
+                    Không làm bài
                   </label>
                   <label>
                     <input
                       type="checkbox"
-                      checked={checkFlags[student.mahv]?.lamBaiTap || false}
-                      onChange={() => handleCheckChange(student.mahv, "lamBaiTap")}
+                      checked={checkFlags[student.mahv]?.chuachuy || false}
+                      onChange={() => handleCheckChange(student.mahv, "chuachuy")}
                     />
-                    Làm bài tập
+                   Chưa chú ý
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={checkFlags[student.mahv]?.dihoctre || false}
+                      onChange={() => handleCheckChange(student.mahv, "dihoctre")}
+                    />
+                   Đi học trễ
                   </label>
                 </div>
 <div style={{ display: "flex", gap: "8px", marginTop: 6 }}>
