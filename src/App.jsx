@@ -160,10 +160,11 @@ function App() {
       ngay: today,
       trangthai: attendance[s.mahv],
       ghichu: [
-        checkFlags[s.mahv]?.tot ? "Tốt" : "",
+        checkFlags[s.mahv]?.tot ? "Học tốt" : "",
         checkFlags[s.mahv]?.tienbo ? "Tiến bộ" : "",
-        checkFlags[s.mahv]?.coGang ? "Có cố gắng" : "",
-        checkFlags[s.mahv]?.lamBaiTap ? "Làm bài tập" : "",
+        checkFlags[s.mahv]?.coGang ? "Không làm bài" : "",
+        checkFlags[s.mahv]?.lamBaiTap ? "Chưa chú ý" : "",
+        checkFlags[s.mahv]?.lamBaiTap ? "Đi học trễ" : "",
         notes[s.mahv] || "",
       ]
         .filter((x) => x !== "")
