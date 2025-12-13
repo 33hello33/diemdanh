@@ -67,7 +67,12 @@ function App() {
     setLoggedIn(true);
     fetchLopList(data.manv, data.role);
   }
-
+  
+const isSaturday = (dateStr) => {
+  const d = new Date(dateStr);
+  return d.getDay() === 6; // 0=CN, 6=Thứ 7
+};
+  
   async function fetchStudents(maLop) {
     const { data } = await supabase
       .from("tbl_hv")
@@ -81,8 +86,13 @@ function App() {
 
     const att = {};
     const note = {};
+    
+    const macDinhTrangThai = isSaturday(selectedDate)
+  ? "Nghỉ không phép"
+  : "Có mặt";
+    
     (data || []).forEach((s) => {
-      att[s.mahv] = "Có mặt";
+      att[s.mahv] = macDinhTrangThai;
       note[s.mahv] = "";
     });
     setAttendance(att);
