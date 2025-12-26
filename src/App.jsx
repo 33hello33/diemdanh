@@ -12,6 +12,8 @@ export const supabase = createClient(
     },
   }
 )
+console.log("URL:", supabaseUrl);
+console.log("KEY:", supabaseAnonKey);
 function App() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
