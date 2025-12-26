@@ -6,7 +6,7 @@ const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
 export const supabase = createClient(
   supabaseUrl,
   supabaseAnonKey,
-  db: { schema: 'testdemo' }
+  db: { schema: "testdemo" },
 );
 
 function App() {
