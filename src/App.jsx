@@ -55,7 +55,7 @@ function App() {
 
   async function handleLogin() {
     const { data, error } = await supabase
-      .from("testdemo.tbl_nv")
+      .from("tbl_nv")
       .select("*")
       .eq("username", username)
       .eq("password", password)
