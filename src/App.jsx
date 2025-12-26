@@ -5,10 +5,10 @@ const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
 const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
 export const supabase = createClient(
   supabaseUrl,
-  supabaseAnonKey
-)
-console.log("URL:", supabaseUrl);
-console.log("KEY:", supabaseAnonKey);
+  supabaseAnonKey,
+  db: { schema: 'testdemo' }
+);
+
 function App() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -55,7 +55,7 @@ function App() {
 
   async function handleLogin() {
     const { data, error } = await supabase
-      .from("testdemo.tbl_nv")
+      .from("tbl_nv")
       .select("*")
       .eq("username", username)
       .eq("password", password)
