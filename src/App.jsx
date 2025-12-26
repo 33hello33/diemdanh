@@ -55,12 +55,16 @@ function App() {
 
   async function handleLogin() {
     const { data, error } = await supabase
-      .from("tbl_nv")
+      .from("testdemo.tbl_nv")
       .select("*")
       .eq("username", username)
       .eq("password", password)
       .single();
-
+    
+console.log("input:", username, password);
+console.log("data:", data);
+console.log("error:", error);
+    
     if (error || !data) {
       alert("Sai tài khoản hoặc mật khẩu!");
       return;
