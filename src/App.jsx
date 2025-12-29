@@ -283,7 +283,7 @@ return (
         {/* ---------- PHẦN 1: LỚP ---------- */}
         <div style={boxStyle}>
           <h2 style={{ color: "#2c3e50" }}>📘 Điểm danh theo lớp</h2>
-          {role === "Quản lý" || role === "Giám đốc" && (
+          { (role === "Quản lý" || role === "Giám đốc") && (
             <div style={{ margin: "12px 0" }}>
               <label>📅 Chọn ngày điểm danh:</label>
               <input type="date" value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)} style={{ marginLeft: "10px", padding: "6px" }} />
