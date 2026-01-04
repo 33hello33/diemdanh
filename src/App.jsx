@@ -428,7 +428,49 @@ return (
           value={searchNotes[s.mahv] || ""}
           onChange={(e) => setSearchNotes(prev => ({ ...prev, [s.mahv]: e.target.value }))}
           style={{ width: "100%", marginTop: "6px", padding: "6px 8px", borderRadius: "6px", border: "1px solid #ccc" }}
-        />
+        /><button
+  onClick={async () => {
+    const note = notes[student.mahv]?.trim() || "";
+
+    if (note === "") {
+      alert("⚠️ Vui lòng nhập ghi chú trước khi gửi cảnh báo!");
+      return;
+    }
+
+    const now = new Date().toISOString();
+    
+   //lấy tên lớp đúng
+    const currentLop = lopList.find(x => x.malop === selectedLop);
+    
+    const { error } = await supabase.from("tbl_alert").insert([
+      {
+        tenlop: currentLop?.tenlop || "",
+        tennv: username,         // tên giáo viên
+        tenhv: student.tenhv,      // tên học viên
+        ghichu: note,            // ghi chú
+        time: now,               // thời gian gửi
+        tinhtrang: 'Chưa làm',
+      },
+    ]);
+
+    if (error) {
+      alert("❌ Có lỗi khi gửi cảnh báo!");
+    } else {
+      alert("🔴 Cảnh báo đã được gửi!");
+    }
+  }}
+  style={{
+    backgroundColor: "#e74c3c",
+    color: "white",
+    border: "none",
+    padding: "8px 12px",
+    borderRadius: 6,
+    cursor: "pointer",
+    fontSize: "18px",
+  }}
+>
+  ⚠️
+</button>
       </div>
     ))}
     {searchResults.length > 0 && (
@@ -489,6 +531,49 @@ return (
           onChange={(e) => setMahvNote(e.target.value)}
           style={{ width: "100%", marginTop: "6px", padding: "6px 8px", borderRadius: "6px", border: "1px solid #ccc" }}
         />
+        <button
+  onClick={async () => {
+    const note = notes[student.mahv]?.trim() || "";
+
+    if (note === "") {
+      alert("⚠️ Vui lòng nhập ghi chú trước khi gửi cảnh báo!");
+      return;
+    }
+
+    const now = new Date().toISOString();
+    
+   //lấy tên lớp đúng
+    const currentLop = lopList.find(x => x.malop === selectedLop);
+    
+    const { error } = await supabase.from("tbl_alert").insert([
+      {
+        tenlop: currentLop?.tenlop || "",
+        tennv: username,         // tên giáo viên
+        tenhv: student.tenhv,      // tên học viên
+        ghichu: note,            // ghi chú
+        time: now,               // thời gian gửi
+        tinhtrang: 'Chưa làm',
+      },
+    ]);
+
+    if (error) {
+      alert("❌ Có lỗi khi gửi cảnh báo!");
+    } else {
+      alert("🔴 Cảnh báo đã được gửi!");
+    }
+  }}
+  style={{
+    backgroundColor: "#e74c3c",
+    color: "white",
+    border: "none",
+    padding: "8px 12px",
+    borderRadius: 6,
+    cursor: "pointer",
+    fontSize: "18px",
+  }}
+>
+  ⚠️
+</button>
         <button
           onClick={handleMahvSubmit}
           style={{ width: "100%", marginTop: "10px", padding: "12px", backgroundColor: "#2ecc71", color: "#fff", border: "none", borderRadius: "6px", fontWeight: "600" }}
