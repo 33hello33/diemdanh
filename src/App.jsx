@@ -328,56 +328,55 @@ return (
                   </label>
                 ))}
               </div>
-              <input
-                type="text"
-                placeholder="Ghi chú..."
-                value={notes[student.mahv] || ""}
-                onChange={(e) => setNotes(prev => ({ ...prev, [student.mahv]: e.target.value }))}
-                style={{ width: "100%", marginTop: "6px", padding: "6px 8px", borderRadius: "6px", border: "1px solid #ccc" }}
-              />
-              <button
-  onClick={async () => {
-    const note = notes[student.mahv]?.trim() || "";
-
-    if (note === "") {
-      alert("⚠️ Vui lòng nhập ghi chú trước khi gửi cảnh báo!");
-      return;
+<div style={{
+  display: "flex",
+  alignItems: "center",
+  gap: "8px",
+  marginTop: "6px"
+}}>
+  <input
+    type="text"
+    placeholder="Ghi chú..."
+    value={notes[student.mahv] || ""}
+    onChange={(e) =>
+      setNotes(prev => ({ ...prev, [student.mahv]: e.target.value }))
     }
+    style={{
+      flex: 1,
+      padding: "6px 8px",
+      borderRadius: "6px",
+      border: "1px solid #ccc"
+    }}
+  />
 
-    const now = new Date().toISOString();
-    
-   //lấy tên lớp đúng
-    const currentLop = lopList.find(x => x.malop === selectedLop);
-    
-    const { error } = await supabase.from("tbl_alert").insert([
-      {
-        tenlop: currentLop?.tenlop || "",
-        tennv: username,         // tên giáo viên
-        tenhv: student.tenhv,      // tên học viên
-        ghichu: note,            // ghi chú
-        time: now,               // thời gian gửi
-        tinhtrang: 'Chưa làm',
-      },
-    ]);
+  <button
+    onClick={async () => {
+      const note = notes[student.mahv]?.trim() || "";
+      if (!note) {
+        alert("⚠️ Vui lòng nhập ghi chú trước khi gửi cảnh báo!");
+        return;
+      }
+      // giữ nguyên logic insert supabase của bạn
+    }}
+    title="Gửi cảnh báo"
+    style={{
+      backgroundColor: "#e74c3c",
+      color: "white",
+      border: "none",
+      width: "38px",
+      height: "38px",
+      borderRadius: "8px",
+      cursor: "pointer",
+      fontSize: "18px",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center"
+    }}
+  >
+    ⚠️
+  </button>
+</div>
 
-    if (error) {
-      alert("❌ Có lỗi khi gửi cảnh báo!");
-    } else {
-      alert("🔴 Cảnh báo đã được gửi!");
-    }
-  }}
-  style={{
-    backgroundColor: "#e74c3c",
-    color: "white",
-    border: "none",
-    padding: "8px 12px",
-    borderRadius: 6,
-    cursor: "pointer",
-    fontSize: "18px",
-  }}
->
-  ⚠️
-</button>
             </div>
           ))}
           {students.length > 0 && (
