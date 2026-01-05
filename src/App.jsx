@@ -40,7 +40,7 @@ function App() {
       .select("malop, tenlop")
       .neq("daxoa", "Đã Xóa");
 
-    if (role === "Giáo viên") query = query.eq("manv", manv);
+    if ((role === "Giáo viên") ||  (role === "Trợ giảng")) query = query.eq("manv", manv);
 
     const { data, error } = await query;
     if (!error) setLopList(data);
