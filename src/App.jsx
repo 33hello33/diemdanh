@@ -356,7 +356,27 @@ return (
         alert("⚠️ Vui lòng nhập ghi chú trước khi gửi cảnh báo!");
         return;
       }
-      // giữ nguyên logic insert supabase của bạn
+      const now = new Date().toISOString();
+    
+   //lấy tên lớp đúng
+    const currentLop = lopList.find(x => x.malop === selectedLop);
+    
+    const { error } = await supabase.from("tbl_alert").insert([
+      {
+        tenlop: currentLop?.tenlop || "",
+        tennv: username,         // tên giáo viên
+        tenhv: student.tenhv,      // tên học viên
+        ghichu: note,            // ghi chú
+        time: now,               // thời gian gửi
+        tinhtrang: 'Chưa làm',
+      },
+    ]);
+
+    if (error) {
+      alert("❌ Có lỗi khi gửi cảnh báo!");
+    } else {
+      alert("🔴 Cảnh báo đã được gửi!");
+    }
     }}
     title="Gửi cảnh báo"
     style={{
