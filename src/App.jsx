@@ -41,6 +41,9 @@ function App() {
       .neq("daxoa", "Đã Xóa");
 
     if (role === "Giáo viên") query = query.eq("manv", manv);
+    else if (role === "Trợ giảng") {
+      query = query.eq("manvtrogiang", manv);
+    }
 
     const { data, error } = await query;
     if (!error) setLopList(data);
