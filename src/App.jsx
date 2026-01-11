@@ -40,14 +40,10 @@ function App() {
       .select("malop, tenlop")
       .neq("daxoa", "Đã Xóa");
 
-      // 👨‍🏫 Giáo viên: là GV chính hoặc trợ giảng
-  if (role === "Giáo viên") {
-    query = query.or(`manv.eq.${manv},manvtrogiang.eq.${manv}`);
-  }
+      // 👨‍🏫 Giáo viên: 
 
-  // 🧑‍🏫 Trợ giảng: chỉ cần là trợ giảng
   if (role === "Trợ giảng") {
-    query = query.eq("manvtrogiang", manv);
+    query = query.eq("manv", manv);
   }
 
     const { data, error } = await query;
