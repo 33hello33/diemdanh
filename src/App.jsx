@@ -76,7 +76,7 @@ function App() {
     const { data } = await supabase
       .from("tbl_hv")
       .select("*")
-      .eq("malop", maLop)
+       .ilike("malop", `%${maLop}%`)
       .neq("trangthai", "Đã Nghỉ")
       .order("tenhv", { ascending: true });
 
