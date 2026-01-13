@@ -77,17 +77,10 @@ function App() {
   }
 
   async function fetchStudents(maLop) {
-      const conditions = [
-    `malop.eq.${maLop}`,            // chỉ có 1 lớp
-    `malop.ilike.${maLop},%`,       // đầu chuỗi
-    `malop.ilike.%,${maLop},%`,     // giữa chuỗi
-    `malop.ilike.%,${maLop}`        // cuối chuỗi
-  ];
-    
     const { data } = await supabase
       .from("tbl_hv")
       .select("*")
-      .or(conditions.join(","))        // ⭐ đây là điểm quan trọng
+      .ilike("malop", `%${maLop}%`)
       .neq("trangthai", "Đã Nghỉ")
       .order("tenhv", { ascending: true });
 
