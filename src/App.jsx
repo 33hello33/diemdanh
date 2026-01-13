@@ -81,7 +81,7 @@ function App() {
       .from("tbl_hv")
       .select("*")
       .or(
-        `malop.eq.${maLop}` +          // trường hợp chỉ có 1 lớp
+        `malop.eq.${maLop},` +          // trường hợp chỉ có 1 lớp
         `malop.ilike.${maLop},%,` +     // đầu chuỗi  "lop001,..."
         `malop.ilike.%,${maLop},%,` +   // giữa chuỗi "... ,lop001,..."
         `malop.ilike.%,${maLop}`         // cuối chuỗi "... ,lop001"
