@@ -40,7 +40,11 @@ function App() {
       .neq("daxoa", "Đã Xóa");
 
     if (role === "Giáo viên") query = query.eq("manv", manv);
-
+    
+  // 🧑‍🏫 Trợ giảng → thấy lớp mà họ phụ trách (TG1 hoặc TG2)
+  if (role === "Trợ giảng") {
+    query = query.or(`manvtrogiang.eq.${manv}`);
+  }
     const { data, error } = await query;
     if (!error) setLopList(data);
   }
