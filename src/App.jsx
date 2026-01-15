@@ -40,10 +40,14 @@ function App() {
       .select("malop, tenlop")
       .neq("daxoa", "Đã Xóa");
 
-      // 👨‍🏫 Giáo viên: 
-
-  if (role === "Trợ giảng") {
+ // 👨‍🏫 Giáo viên → chỉ thấy lớp của chính giáo viên đó
+  if (role === "Giáo viên") {
     query = query.eq("manv", manv);
+  }
+
+  // 🧑‍🏫 Trợ giảng → thấy lớp mà họ phụ trách (TG1 hoặc TG2)
+  if (role === "Trợ giảng") {
+    query = query.or(`manvtrogiang1.eq.${manv},manvtrogiang2.eq.${manv}`);
   }
 
     const { data, error } = await query;
@@ -76,7 +80,7 @@ function App() {
     const { data } = await supabase
       .from("tbl_hv")
       .select("*")
-       .ilike("malop", `%${maLop}%`)
+      .ilike("malop", `%${maLop}%`)
       .neq("trangthai", "Đã Nghỉ")
       .order("tenhv", { ascending: true });
 
@@ -134,6 +138,7 @@ async function loadTodayData() {
       ngay: diemDanhNgay,
       trangthai: attendance[s.mahv],
       ghichu: notes[s.mahv] || "",
+      malop: selectedLop,
     }));
 
     const { error } = await supabase
