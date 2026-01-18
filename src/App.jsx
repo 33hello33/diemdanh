@@ -429,9 +429,9 @@ async function loadThongKe() {
     </h2>
 
     <p>👨‍🎓 Tổng học viên đang học: <b>{tkHocVien}</b></p>
-    <p>💰 Thu học phí: <b>{tkThuHP.toLocaleString()}đ</b></p>
-    <p>🛒 Thu bán hàng: <b>{tkThuBH.toLocaleString()}đ</b></p>
-    <p>📉 Tổng chi: <b>{tkChi.toLocaleString()}đ</b></p>
+    <p>💰 Tổng thu HP tháng này: <b>{tkThuHP.toLocaleString()}đ</b></p>
+    <p>🛒 Tông thu BH tháng này: <b>{tkThuBH.toLocaleString()}đ</b></p>
+    <p>📉 Tổng phiếu chi tháng này: <b>{tkChi.toLocaleString()}đ</b></p>
   </div>
 )}
 
