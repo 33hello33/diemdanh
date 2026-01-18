@@ -290,7 +290,7 @@ async function loadThongKe() {
   const { data: hp } = await supabase
     .from("tbl_hd")
     .select("dadong")
-    .neq("daxoa", "Đã Xóa")
+    .or("daxoa.is.null,daxoa.neq.Đã Xóa")
     .gte("ngaylap", firstDayStr)
     .lte("ngaylap", today);
 
@@ -305,7 +305,7 @@ async function loadThongKe() {
   const { data: bh } = await supabase
     .from("tbl_billhanghoa")
     .select("dadong")
-    .neq("daxoa", "Đã Xóa")
+    .or("daxoa.is.null,daxoa.neq.Đã Xóa")
     .gte("ngaylap", firstDayStr)
     .lte("ngaylap", today);
 
