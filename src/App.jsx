@@ -109,7 +109,9 @@ useEffect(() => {
     // Set mặc định
     const att = {};
     const note = {};
-    const defaultStatus = "Có mặt";
+    const defaultStatus = isSaturday(selectedDate)
+      ? "Nghỉ không phép"
+      : "Có mặt";
 
     (hv || []).forEach((s) => {
       att[s.mahv] = defaultStatus;
@@ -288,7 +290,7 @@ async function loadThongKe() {
   const { data: hp } = await supabase
     .from("tbl_hd")
     .select("dadong")
-    .neq("daxoa", "Đã Xóa")
+    .or("daxoa.is.null,daxoa.neq.Đã Xóa")
     .gte("ngaylap", firstDayStr)
     .lte("ngaylap", today);
 
@@ -303,7 +305,7 @@ async function loadThongKe() {
   const { data: bh } = await supabase
     .from("tbl_billhanghoa")
     .select("dadong")
-    .neq("daxoa", "Đã Xóa")
+    .or("daxoa.is.null,daxoa.neq.Đã Xóa")
     .gte("ngaylap", firstDayStr)
     .lte("ngaylap", today);
 
@@ -318,7 +320,7 @@ async function loadThongKe() {
   const { data: pc } = await supabase
     .from("tbl_phieuchi")
     .select("chiphi")
-    .neq("daxoa", "Đã Xóa")
+    .or("daxoa.is.null,daxoa.neq.Đã Xóa")
     .gte("ngaylap", firstDayStr)
     .lte("ngaylap", today);
 
