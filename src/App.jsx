@@ -40,6 +40,12 @@ function App() {
   const [mahvAttendance, setMahvAttendance] = useState("");
   const [mahvNote, setMahvNote] = useState("");
 
+  // THỐNG KÊ
+  const [tkHocVien, setTkHocVien] = useState(0);
+  const [tkThuHP, setTkThuHP] = useState(0);
+  const [tkThuBH, setTkThuBH] = useState(0);
+  const [tkChi, setTkChi] = useState(0);
+  
   // -----------------------------------------------------
   // FUNCS
   // -----------------------------------------------------
@@ -66,7 +72,13 @@ function App() {
     setLoggedIn(true);
     fetchLopList(data.manv, data.role);
   }
-
+  
+useEffect(() => {
+  if (loggedIn && role === "Quản lý") {
+    loadThongKe();
+  }
+}, [loggedIn, role]);
+  
   // LẤY DANH SÁCH LỚP
   async function fetchLopList(manv, role) {
     let q = supabase
@@ -255,7 +267,70 @@ function App() {
 
     alert(error ? "❌ Lỗi lưu!" : "✅ Lưu thành công!");
   }
+  
+  // --------------------------------------------------------------------
+  // THỐNG KÊ
+  // --------------------------------------------------------------------
+async function loadThongKe() {
+  const firstDay = new Date();
+  firstDay.setDate(1);
+  const firstDayStr = firstDay.toISOString().split("T")[0];
 
+  const today = new Date().toISOString().split("T")[0];
+
+  // 1. Tổng học viên ĐANG HỌC
+  const { data: hv } = await supabase
+    .from("tbl_hv")
+    .select("mahv")
+    .eq("trangthai", "Đang học");
+
+  setTkHocVien(hv?.length || 0);
+
+  // 2. Tổng thu HP tháng này
+  const { data: hp } = await supabase
+    .from("tbl_hd")
+    .select("dadong")
+    .neq("daxoa", "Đã Xóa")
+    .gte("ngaylap", firstDayStr)
+    .lte("ngaylap", today);
+
+  const sumHP =
+    hp
+      ?.map((x) => Number(x.dadong.replace(/,/g, "")))
+      .reduce((a, b) => a + b, 0) || 0;
+
+  setTkThuHP(sumHP);
+
+  // 3. Tổng thu BH tháng này
+  const { data: bh } = await supabase
+    .from("tbl_billhanghoa")
+    .select("dadong")
+    .neq("daxoa", "Đã Xóa")
+    .gte("ngaylap", firstDayStr)
+    .lte("ngaylap", today);
+
+  const sumBH =
+    bh
+      ?.map((x) => Number(x.dadong.replace(/,/g, "")))
+      .reduce((a, b) => a + b, 0) || 0;
+
+  setTkThuBH(sumBH);
+
+  // 4. Tổng chi tháng này
+  const { data: pc } = await supabase
+    .from("tbl_phieuchi")
+    .select("chiphi")
+    .neq("daxoa", "Đã Xóa")
+    .gte("ngaylap", firstDayStr)
+    .lte("ngaylap", today);
+
+  const sumChi =
+    pc
+      ?.map((x) => Number(x.chiphi.replace(/,/g, "")))
+      .reduce((a, b) => a + b, 0) || 0;
+
+  setTkChi(sumChi);
+}
   // -----------------------------------------------------
   // UI
   // -----------------------------------------------------
@@ -335,6 +410,31 @@ function App() {
         </div>
       ) : (
         <>
+          {/* -------------------------------------------------- */}
+          {/*        PHẦN 0: THỐNG KÊ              */}
+          {/* -------------------------------------------------- */}
+          {role === "Quản lý" && (
+  <div
+    style={{
+      background: "#eef6ff",
+      padding: "20px",
+      borderRadius: "12px",
+      marginBottom: "25px",
+      boxShadow: "0 3px 10px rgba(0,0,0,0.1)",
+      borderLeft: "6px solid #3498db",
+    }}
+  >
+    <h2 style={{ margin: "0 0 15px 0", color: "#2c3e50" }}>
+      📊 Thống kê tháng {new Date().getMonth() + 1}
+    </h2>
+
+    <p>👨‍🎓 Tổng học viên đang học: <b>{tkHocVien}</b></p>
+    <p>💰 Thu học phí: <b>{tkThuHP.toLocaleString()}đ</b></p>
+    <p>🛒 Thu bán hàng: <b>{tkThuBH.toLocaleString()}đ</b></p>
+    <p>📉 Tổng chi: <b>{tkChi.toLocaleString()}đ</b></p>
+  </div>
+)}
+
           {/* -------------------------------------------------- */}
           {/*        PHẦN 1: ĐIỂM DANH THEO LỚP                */}
           {/* -------------------------------------------------- */}
