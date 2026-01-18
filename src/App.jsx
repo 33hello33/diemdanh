@@ -320,7 +320,7 @@ async function loadThongKe() {
   const { data: pc } = await supabase
     .from("tbl_phieuchi")
     .select("chiphi")
-    .neq("daxoa", "Đã Xóa")
+    .or("daxoa.is.null,daxoa.neq.Đã Xóa")
     .gte("ngaylap", firstDayStr)
     .lte("ngaylap", today);
 
