@@ -82,7 +82,7 @@ function App() {
       .select("*")
       .ilike("malop", `%${maLop}%`)
       .neq("trangthai", "Đã Nghỉ")
-      .order("tenhv", { ascending: true });
+      .order("mahv", { ascending: true });
 
     setStudents(data || []);
     setSoLuongHocVien(data?.length || 0);
