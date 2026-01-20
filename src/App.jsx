@@ -291,8 +291,8 @@ async function loadThongKe() {
     .from("tbl_hd")
     .select("dadong")
     .or("daxoa.is.null,daxoa.neq.Đã Xóa")
-    .gte("ngaylap", firstDayStr)
-    .lte("ngaylap", today);
+    .gte("ngaylap", firstDayStr + " 00:00:00")
+    .lte("ngaylap", today+ " 23:59:59")
 
   const sumHP =
     hp
@@ -306,8 +306,8 @@ async function loadThongKe() {
     .from("tbl_billhanghoa")
     .select("dadong")
     .or("daxoa.is.null,daxoa.neq.Đã Xóa")
-    .gte("ngaylap", firstDayStr)
-    .lte("ngaylap", today);
+    .gte("ngaylap", firstDayStr + " 00:00:00")
+    .lte("ngaylap", today+ " 23:59:59")
 
   const sumBH =
     bh
@@ -321,8 +321,8 @@ async function loadThongKe() {
     .from("tbl_phieuchi")
     .select("chiphi")
     .or("daxoa.is.null,daxoa.neq.Đã Xóa")
-    .gte("ngaylap", firstDayStr)
-    .lte("ngaylap", today);
+    .gte("ngaylap", firstDayStr + " 00:00:00")
+    .lte("ngaylap", today+ " 23:59:59")
 
   const sumChi =
     pc
