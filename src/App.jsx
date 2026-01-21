@@ -6,39 +6,7 @@ const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
 const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-
 function App() {
-  // Thêm vào các state hiện tại
-const [viewMode, setViewMode] = useState("login"); // "login", "staff", "parent"
-  const [parentSearchMahv, setParentSearchMahv] = useState("");
-async function handleParentLookup(mahv) {
-  if (!mahv) return alert("Vui lòng nhập mã học viên!");
-
-  // 1. Kiểm tra mã học viên có tồn tại không
-  const { data: student, error } = await supabase
-    .from("tbl_hv")
-    .select("*")
-    .eq("mahv", mahv)
-    .neq("trangthai", "Đã Nghỉ")
-    .single();
-
-  if (error || !student) {
-    alert("❌ Không tìm thấy mã học viên hoặc học viên đã nghỉ!");
-    return;
-  }
-
-  // 2. Nếu tìm thấy, chuyển sang chế độ xem của Phụ huynh và load học phí
-  setManv(null); // Phụ huynh không có mã nhân viên
-  setRole("Phụ huynh");
-  setLoggedIn(true);
-  setViewMode("parent");
-  
-  // Gọi hàm load học phí đã viết ở bước trước
-  setParentSearchMahv(mahv); 
-  // Bạn có thể tự động gọi handleViewTuition() tại đây
-}
-
-  
   // LOGIN
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -372,34 +340,31 @@ async function loadThongKe() {
   return (
     <div className="container-wrapper" style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
       {!loggedIn ? (
-       <div className="glass-card">
-    {/* PHẦN DÀNH CHO NHÂN VIÊN */}
-    <div style={{ marginBottom: '30px', borderBottom: '1px solid #eee', paddingBottom: '20px' }}>
-      <h3>👨‍🏫 Dành cho Giáo viên / Quản lý</h3>
-      <input type="text" className="form-control" placeholder="Tên đăng nhập" onChange={(e) => setUsername(e.target.value)} />
-      <input type="password" className="form-control" placeholder="Mật khẩu" onChange={(e) => setPassword(e.target.value)} />
-      <button className="btn btn-primary" onClick={handleLogin}>Đăng nhập</button>
-    </div>
-
-    {/* PHẦN DÀNH CHO PHỤ HUYNH */}
-    <div>
-      <h3>👪 Dành cho Phụ huynh</h3>
-      <p style={{ fontSize: '13px', color: '#666' }}>Nhập mã học viên để xem học phí và kết quả</p>
-      <input 
-        type="text" 
-        className="form-control" 
-        placeholder="Mã học viên (Ví dụ: HV001)" 
-        onKeyDown={(e) => { if(e.key === 'Enter') handleParentLookup(e.target.value) }}
-        id="parent-mahv-input"
-      />
-      <button 
-        className="btn btn-success" 
-        onClick={() => handleParentLookup(document.getElementById('parent-mahv-input').value)}
-      >
-        Tra cứu nhanh
-      </button>
-    </div>
-  </div>
+        /* LOGIN UI - GLASS STYLE */
+        <div className="glass-card" style={{ maxWidth: "400px", margin: "100px auto", textAlign: "center" }}>
+          <h2 style={{ marginBottom: "24px" }}>🔐 Đăng nhập</h2>
+          <div className="form-group" style={{ marginBottom: "15px" }}>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Tên đăng nhập"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+          </div>
+          <div className="form-group" style={{ marginBottom: "20px" }}>
+            <input
+              type="password"
+              className="form-control"
+              placeholder="Mật khẩu"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+          <button className="btn btn-primary" style={{ width: "100%" }} onClick={handleLogin}>
+            Đăng nhập
+          </button>
+        </div>
       ) : (
         <>
           {/* PHẦN 0: THỐNG KÊ DASHBOARD */}
