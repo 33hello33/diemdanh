@@ -388,7 +388,7 @@ async function fetchTuitionForParent(mahv) {
       {!loggedIn ? (
         /* SỬA LỖI: Sử dụng <> để bao 2 thẻ div cạnh nhau */
         <>
-          /* LOGIN UI - NHÂN VIÊN */
+          // LOGIN UI - NHÂN VIÊN 
           <div className="glass-card" style={{ maxWidth: "400px", margin: "20px auto", textAlign: "center" }}>
             <h2 style={{ marginBottom: "24px" }}>👨‍🏫 Nhân viên Đăng nhập</h2>
             <div className="form-group" style={{ marginBottom: "15px" }}>
@@ -414,7 +414,7 @@ async function fetchTuitionForParent(mahv) {
             </button>
           </div>
 
-          /* PHẦN PHỤ HUYNH */
+          // PHẦN PHỤ HUYNH
           <div className="glass-card" style={{ maxWidth: "400px", margin: "20px auto", textAlign: "center" }}>
             <h2 style={{ marginBottom: "24px" }}>👪 Dành cho Phụ huynh</h2>
             <div className="form-group" style={{ marginBottom: "15px" }}>
@@ -427,16 +427,16 @@ async function fetchTuitionForParent(mahv) {
                 onKeyDown={(e) => e.key === "Enter" && handleParentLookup()}
               />
             </div>
-            {/* SỬA LỖI: Nút này phải gọi handleParentLookup, không phải handleLogin */}
+            {
             <button className="btn btn-success" style={{ width: "100%" }} onClick={() => handleParentLookup()}>
               Tra cứu
             </button>
           </div>
         </>
       ) : (
-        /* KHI ĐÃ VÀO HỆ THỐNG */
+        // KHI ĐÃ VÀO HỆ THỐNG
         <>
-          {/* PHẦN PHỤ HUYNH DASHBOARD */}
+          {// PHẦN PHỤ HUYNH DASHBOARD }
           {role === "Phụ huynh" ? (
             <div className="glass-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
@@ -453,7 +453,7 @@ async function fetchTuitionForParent(mahv) {
               )) : <p className="text-muted">Chưa có dữ liệu học phí cho học viên này.</p>}
             </div>
           ) : (
-            /* GIAO DIỆN NHÂN VIÊN (QUẢN LÝ / GIÁO VIÊN) */
+            // GIAO DIỆN NHÂN VIÊN (QUẢN LÝ / GIÁO VIÊN) 
             <>
               <div className="glass-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span>Chào <strong>{username}</strong> ({role})</span>
