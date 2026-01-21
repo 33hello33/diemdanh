@@ -6,7 +6,9 @@ const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
 const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-// Thêm vào các state hiện tại
+
+function App() {
+  // Thêm vào các state hiện tại
 const [viewMode, setViewMode] = useState("login"); // "login", "staff", "parent"
 async function handleParentLookup(mahv) {
   if (!mahv) return alert("Vui lòng nhập mã học viên!");
@@ -35,7 +37,7 @@ async function handleParentLookup(mahv) {
   // Bạn có thể tự động gọi handleViewTuition() tại đây
 }
 
-function App() {
+  
   // LOGIN
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
