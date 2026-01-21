@@ -384,6 +384,7 @@ async function fetchTuitionForParent(mahv) {
   // -----------------------------------------------------
 
   return (
+    <>
     <div className="container-wrapper" style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
       {!loggedIn ? (
         /* LOGIN UI - GLASS STYLE */
@@ -411,7 +412,7 @@ async function fetchTuitionForParent(mahv) {
             Đăng nhập
           </button>
         </div>
-
+    
       /*  PHẦN PHỤ HUYNH */
       <div className="glass-card" style={{ maxWidth: "400px", margin: "100px auto", textAlign: "center" }}>
           <h2 style={{ marginBottom: "24px" }}>👪 Dành cho Phụ huynh</h2>
@@ -430,8 +431,9 @@ async function fetchTuitionForParent(mahv) {
              Tra cứu
           </button>
         </div>
+      </>
       ) : (
-        <>
+<>
              {/* PHẦN 0: PHỤ HUYNH DASHBOARD */}
           {role === "Phụ huynh" ? (
        <div className="glass-card">
