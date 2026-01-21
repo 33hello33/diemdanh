@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
+import "./App.css";
 
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
 const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
@@ -336,213 +337,119 @@ async function loadThongKe() {
   // UI
   // -----------------------------------------------------
 
-  const boxStyle = {
-    backgroundColor: "#f9f9f9",
-    borderRadius: "12px",
-    padding: "20px",
-    marginBottom: "30px",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-  };
-
   return (
-    <div style={{ padding: "30px", maxWidth: "720px", margin: "40px auto" }}>
+    <div className="container-wrapper" style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
       {!loggedIn ? (
-        // LOGIN UI
-        <div
-          style={{
-            backgroundColor: "#f4f6f8",
-            borderRadius: "12px",
-            padding: "30px",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-          }}
-        >
-          <h2
-            style={{
-              textAlign: "center",
-              color: "#2c3e50",
-              marginBottom: "24px",
-            }}
-          >
-            🔐 Đăng nhập điểm danh
-          </h2>
-
-          <input
-            type="text"
-            placeholder="Tên đăng nhập"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            style={{
-              width: "100%",
-              padding: "10px",
-              borderRadius: "6px",
-              border: "1px solid #ccc",
-              marginBottom: "16px",
-            }}
-          />
-
-          <input
-            type="password"
-            placeholder="Mật khẩu"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            style={{
-              width: "100%",
-              padding: "10px",
-              borderRadius: "6px",
-              border: "1px solid #ccc",
-              marginBottom: "16px",
-            }}
-          />
-
-          <button
-            onClick={handleLogin}
-            style={{
-              width: "100%",
-              padding: "12px",
-              backgroundColor: "#3498db",
-              color: "#fff",
-              border: "none",
-              borderRadius: "6px",
-              fontWeight: "600",
-            }}
-          >
+        /* LOGIN UI - GLASS STYLE */
+        <div className="glass-card" style={{ maxWidth: "400px", margin: "100px auto", textAlign: "center" }}>
+          <h2 style={{ marginBottom: "24px" }}>🔐 Đăng nhập</h2>
+          <div className="form-group" style={{ marginBottom: "15px" }}>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Tên đăng nhập"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+          </div>
+          <div className="form-group" style={{ marginBottom: "20px" }}>
+            <input
+              type="password"
+              className="form-control"
+              placeholder="Mật khẩu"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+          <button className="btn btn-primary" style={{ width: "100%" }} onClick={handleLogin}>
             Đăng nhập
           </button>
         </div>
       ) : (
         <>
-          {/* -------------------------------------------------- */}
-          {/*        PHẦN 0: THỐNG KÊ              */}
-          {/* -------------------------------------------------- */}
+          {/* PHẦN 0: THỐNG KÊ DASHBOARD */}
           {role === "Quản lý" && (
-  <div
-    style={{
-      background: "#eef6ff",
-      padding: "20px",
-      borderRadius: "12px",
-      marginBottom: "25px",
-      boxShadow: "0 3px 10px rgba(0,0,0,0.1)",
-      borderLeft: "6px solid #3498db",
-    }}
-  >
-    <h2 style={{ margin: "0 0 15px 0", color: "#2c3e50" }}>
-      📊 Thống kê tháng {new Date().getMonth() + 1}
-    </h2>
+            <div className="glass-card">
+              <h3 style={{ marginBottom: "16px", color: "var(--primary)" }}>📊 Thống kê tháng {new Date().getMonth() + 1}</h3>
+              <div className="stats-grid">
+                <div className="stat-card">
+                  <div className="stat-label">Học viên</div>
+                  <div className="stat-value">{tkHocVien}</div>
+                </div>
+                <div className="stat-card" style={{ borderColor: "var(--success)" }}>
+                  <div className="stat-label">Học phí</div>
+                  <div className="stat-value">{tkThuHP.toLocaleString()}đ</div>
+                </div>
+                <div className="stat-card" style={{ borderColor: "var(--info)" }}>
+                  <div className="stat-label">Hàng hóa</div>
+                  <div className="stat-value">{tkThuBH.toLocaleString()}đ</div>
+                </div>
+                <div className="stat-card" style={{ borderColor: "var(--danger)" }}>
+                  <div className="stat-label">Tổng chi</div>
+                  <div className="stat-value">{tkChi.toLocaleString()}đ</div>
+                </div>
+              </div>
+            </div>
+          )}
 
-    <p>👨‍🎓 Tổng học viên đang học: <b>{tkHocVien}</b></p>
-    <p>💰 Tổng thu HP tháng này: <b>{tkThuHP.toLocaleString()}đ</b></p>
-    <p>🛒 Tông thu BH tháng này: <b>{tkThuBH.toLocaleString()}đ</b></p>
-    <p>📉 Tổng phiếu chi tháng này: <b>{tkChi.toLocaleString()}đ</b></p>
-  </div>
-)}
+          {/* PHẦN 1: ĐIỂM DANH THEO LỚP */}
+          <div className="glass-card">
+            <h2 style={{ fontSize: "1.2rem", marginBottom: "16px" }}>📘 Điểm danh theo lớp</h2>
 
-          {/* -------------------------------------------------- */}
-          {/*        PHẦN 1: ĐIỂM DANH THEO LỚP                */}
-          {/* -------------------------------------------------- */}
-          <div style={boxStyle}>
-            <h2 style={{ color: "#2c3e50" }}>📘 Điểm danh theo lớp</h2>
-
-            {role === "Quản lý" && (
-              <div style={{ margin: "12px 0" }}>
-                <label>📅 Chọn ngày:</label>
+            <div style={{ display: "flex", gap: "10px", marginBottom: "15px", alignItems: "center" }}>
+              {role === "Quản lý" && (
                 <input
                   type="date"
+                  className="form-control"
+                  style={{ width: "160px" }}
                   value={selectedDate}
                   onChange={(e) => setSelectedDate(e.target.value)}
-                  style={{ marginLeft: 10, padding: 6 }}
                 />
-              </div>
-            )}
+              )}
+              <select
+                className="form-control"
+                value={selectedLop}
+                onChange={(e) => setSelectedLop(e.target.value)}
+              >
+                <option value="">-- Chọn lớp --</option>
+                {lopList.map((lop) => (
+                  <option key={lop.malop} value={lop.malop}>{lop.tenlop}</option>
+                ))}
+              </select>
+            </div>
 
-            <select
-              value={selectedLop}
-              onChange={(e) => setSelectedLop(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "10px",
-                marginBottom: "12px",
-                borderRadius: "6px",
-                border: "1px solid #ccc",
-              }}
-            >
-              <option value="">-- Chọn lớp --</option>
-              {lopList.map((lop) => (
-                <option key={lop.malop} value={lop.malop}>
-                  {lop.tenlop}
-                </option>
-              ))}
-            </select>
-
-            <p>Tổng số học viên: {soLuongHocVien}</p>
+            <div style={{ marginBottom: "15px", fontSize: "14px", color: "#64748B" }}>
+              Sĩ số: <strong>{soLuongHocVien}</strong> học viên
+            </div>
 
             {students.map((s) => (
-              <div
-                key={s.mahv}
-                style={{
-                  background: "#fff",
-                  padding: 16,
-                  borderRadius: 10,
-                  marginBottom: 12,
-                  borderLeft: "5px solid #3498db",
-                  boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-                }}
-              >
-                <div style={{ fontWeight: "600" }}>{s.tenhv}</div>
-
-                <div style={{ display: "flex", gap: 20, marginTop: 10 }}>
+              <div key={s.mahv} className="student-item">
+                <div style={{ fontWeight: "700", color: "var(--text)" }}>{s.tenhv}</div>
+                <div className="radio-group">
                   {["Có mặt", "Nghỉ phép", "Nghỉ không phép"].map((st) => (
                     <label key={st}>
                       <input
                         type="radio"
                         name={`att-${s.mahv}`}
-                        value={st}
                         checked={attendance[s.mahv] === st}
-                        onChange={() =>
-                          setAttendance((prev) => ({
-                            ...prev,
-                            [s.mahv]: st,
-                          }))
-                        }
-                      />{" "}
-                      {st}
+                        onChange={() => setAttendance((prev) => ({ ...prev, [s.mahv]: st }))}
+                      /> {st}
                     </label>
                   ))}
                 </div>
-
                 <input
                   type="text"
+                  className="form-control"
                   placeholder="Ghi chú..."
                   value={notes[s.mahv] || ""}
-                  onChange={(e) =>
-                    setNotes((prev) => ({
-                      ...prev,
-                      [s.mahv]: e.target.value,
-                    }))
-                  }
-                  style={{
-                    width: "100%",
-                    marginTop: 6,
-                    padding: 6,
-                    borderRadius: 6,
-                    border: "1px solid #ccc",
-                  }}
+                  onChange={(e) => setNotes((prev) => ({ ...prev, [s.mahv]: e.target.value }))}
                 />
               </div>
             ))}
 
             {students.length > 0 && (
-              <button
-                onClick={handleSubmit}
-                style={{
-                  width: "100%",
-                  padding: 12,
-                  background: "#2ecc71",
-                  color: "#fff",
-                  borderRadius: 6,
-                  fontWeight: 600,
-                }}
-              >
-                ✅ Lưu điểm danh
+              <button className="btn btn-success" style={{ width: "100%", marginTop: "10px" }} onClick={handleSubmit}>
+                ✅ Lưu điểm danh lớp
               </button>
             )}
           </div>
