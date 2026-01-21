@@ -6,6 +6,35 @@ const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
 const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
+// Thêm vào các state hiện tại
+const [viewMode, setViewMode] = useState("login"); // "login", "staff", "parent"
+async function handleParentLookup(mahv) {
+  if (!mahv) return alert("Vui lòng nhập mã học viên!");
+
+  // 1. Kiểm tra mã học viên có tồn tại không
+  const { data: student, error } = await supabase
+    .from("tbl_hv")
+    .select("*")
+    .eq("mahv", mahv)
+    .neq("trangthai", "Đã Nghỉ")
+    .single();
+
+  if (error || !student) {
+    alert("❌ Không tìm thấy mã học viên hoặc học viên đã nghỉ!");
+    return;
+  }
+
+  // 2. Nếu tìm thấy, chuyển sang chế độ xem của Phụ huynh và load học phí
+  setManv(null); // Phụ huynh không có mã nhân viên
+  setRole("Phụ huynh");
+  setLoggedIn(true);
+  setViewMode("parent");
+  
+  // Gọi hàm load học phí đã viết ở bước trước
+  setParentSearchMahv(mahv); 
+  // Bạn có thể tự động gọi handleViewTuition() tại đây
+}
+
 function App() {
   // LOGIN
   const [username, setUsername] = useState("");
