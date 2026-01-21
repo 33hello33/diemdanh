@@ -386,9 +386,9 @@ async function fetchTuitionForParent(mahv) {
  return (
     <div className="container-wrapper" style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
       {!loggedIn ? (
-        /* SỬA LỖI: Sử dụng <> để bao 2 thẻ div cạnh nhau */
+       // LOGIN UI - NHÂN VIÊN 
         <>
-          // LOGIN UI - NHÂN VIÊN 
+
           <div className="glass-card" style={{ maxWidth: "400px", margin: "20px auto", textAlign: "center" }}>
             <h2 style={{ marginBottom: "24px" }}>👨‍🏫 Nhân viên Đăng nhập</h2>
             <div className="form-group" style={{ marginBottom: "15px" }}>
@@ -414,7 +414,7 @@ async function fetchTuitionForParent(mahv) {
             </button>
           </div>
 
-          // PHẦN PHỤ HUYNH
+          { // PHẦN PHỤ HUYNH }
           <div className="glass-card" style={{ maxWidth: "400px", margin: "20px auto", textAlign: "center" }}>
             <h2 style={{ marginBottom: "24px" }}>👪 Dành cho Phụ huynh</h2>
             <div className="form-group" style={{ marginBottom: "15px" }}>
