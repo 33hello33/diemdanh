@@ -10,6 +10,7 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 function App() {
   // Thêm vào các state hiện tại
 const [viewMode, setViewMode] = useState("login"); // "login", "staff", "parent"
+  const [parentSearchMahv, setParentSearchMahv] = useState("");
 async function handleParentLookup(mahv) {
   if (!mahv) return alert("Vui lòng nhập mã học viên!");
 
