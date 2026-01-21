@@ -457,7 +457,7 @@ async function loadThongKe() {
           {/* -------------------------------------------------- */}
           {/*        PHẦN 2: TÌM THEO TÊN                      */}
           {/* -------------------------------------------------- */}
-          <div style={boxStyle}>
+          <div className="glass-card">
             <h2 style={{ color: "#2c3e50" }}>🔎 Điểm danh theo tên</h2>
 
             <input
@@ -547,7 +547,7 @@ async function loadThongKe() {
           {/* -------------------------------------------------- */}
           {/*        PHẦN 3: TÌM THEO MÃ HV                    */}
           {/* -------------------------------------------------- */}
-          <div style={boxStyle}>
+        <div className="glass-card">
             <h2 style={{ color: "#2c3e50" }}>💳 Điểm danh theo mã HV</h2>
 
             <div style={{ display: "flex", gap: 10, marginBottom: 12 }}>
