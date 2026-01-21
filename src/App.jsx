@@ -340,31 +340,34 @@ async function loadThongKe() {
   return (
     <div className="container-wrapper" style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
       {!loggedIn ? (
-        /* LOGIN UI - GLASS STYLE */
-        <div className="glass-card" style={{ maxWidth: "400px", margin: "100px auto", textAlign: "center" }}>
-          <h2 style={{ marginBottom: "24px" }}>🔐 Đăng nhập</h2>
-          <div className="form-group" style={{ marginBottom: "15px" }}>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Tên đăng nhập"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-          </div>
-          <div className="form-group" style={{ marginBottom: "20px" }}>
-            <input
-              type="password"
-              className="form-control"
-              placeholder="Mật khẩu"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-          <button className="btn btn-primary" style={{ width: "100%" }} onClick={handleLogin}>
-            Đăng nhập
-          </button>
-        </div>
+       <div className="glass-card">
+    {/* PHẦN DÀNH CHO NHÂN VIÊN */}
+    <div style={{ marginBottom: '30px', borderBottom: '1px solid #eee', paddingBottom: '20px' }}>
+      <h3>👨‍🏫 Dành cho Giáo viên / Quản lý</h3>
+      <input type="text" className="form-control" placeholder="Tên đăng nhập" onChange={(e) => setUsername(e.target.value)} />
+      <input type="password" className="form-control" placeholder="Mật khẩu" onChange={(e) => setPassword(e.target.value)} />
+      <button className="btn btn-primary" onClick={handleLogin}>Đăng nhập</button>
+    </div>
+
+    {/* PHẦN DÀNH CHO PHỤ HUYNH */}
+    <div>
+      <h3>👪 Dành cho Phụ huynh</h3>
+      <p style={{ fontSize: '13px', color: '#666' }}>Nhập mã học viên để xem học phí và kết quả</p>
+      <input 
+        type="text" 
+        className="form-control" 
+        placeholder="Mã học viên (Ví dụ: HV001)" 
+        onKeyDown={(e) => { if(e.key === 'Enter') handleParentLookup(e.target.value) }}
+        id="parent-mahv-input"
+      />
+      <button 
+        className="btn btn-success" 
+        onClick={() => handleParentLookup(document.getElementById('parent-mahv-input').value)}
+      >
+        Tra cứu nhanh
+      </button>
+    </div>
+  </div>
       ) : (
         <>
           {/* PHẦN 0: THỐNG KÊ DASHBOARD */}
