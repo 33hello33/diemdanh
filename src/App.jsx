@@ -511,7 +511,7 @@ async function loadThongKe() {
 
                 <input
                   type="text"
-                  placeholder="Ghi chú..."
+                  placeholder="Nhận xét..."
                   value={notes[s.mahv] || ""}
                   onChange={(e) =>
                     setNotes((prev) => ({
@@ -601,7 +601,7 @@ async function loadThongKe() {
 
                 <input
                   type="text"
-                  placeholder="Ghi chú..."
+                  placeholder="Nhận xét..."
                   value={searchNotes[s.mahv] || ""}
                   onChange={(e) =>
                     setSearchNotes((prev) => ({
@@ -699,7 +699,7 @@ async function loadThongKe() {
 
                 <input
                   type="text"
-                  placeholder="Ghi chú..."
+                  placeholder="Nhận xét..."
                   value={mahvNote}
                   onChange={(e) => setMahvNote(e.target.value)}
                   style={{
