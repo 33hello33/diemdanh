@@ -527,6 +527,52 @@ async function loadThongKe() {
                     border: "1px solid #ccc",
                   }}
                 />
+                 <button
+    onClick={async () => {
+      const note = notes[student.mahv]?.trim() || "";
+      if (!note) {
+        alert("⚠️ Vui lòng nhập ghi chú trước khi gửi cảnh báo!");
+        return;
+      }
+      const now = new Date().toISOString();
+    
+   //lấy tên lớp đúng
+    const currentLop = lopList.find(x => x.malop === selectedLop);
+    
+    const { error } = await supabase.from("tbl_alert").insert([
+      {
+        tenlop: currentLop?.tenlop || "",
+        tennv: username,         // tên giáo viên
+        tenhv: student.tenhv,      // tên học viên
+        ghichu: note,            // ghi chú
+        time: now,               // thời gian gửi
+        tinhtrang: 'Chưa làm',
+      },
+    ]);
+
+    if (error) {
+      alert("❌ Có lỗi khi gửi cảnh báo!");
+    } else {
+      alert("🔴 Cảnh báo đã được gửi!");
+    }
+    }}
+    title="Gửi cảnh báo"
+    style={{
+      backgroundColor: "#e74c3c",
+      color: "white",
+      border: "none",
+      width: "38px",
+      height: "38px",
+      borderRadius: "8px",
+      cursor: "pointer",
+      fontSize: "18px",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center"
+    }}
+  >
+    ⚠️
+  </button>
               </div>
             ))}
 
