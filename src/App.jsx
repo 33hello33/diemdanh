@@ -171,14 +171,14 @@ useEffect(() => {
 
     const currentLop = lopList.find(x => x.malop === selectedLop);
 
-    const data_noidunghoc = {
+    const data_noidungday = {
     ngay: selectedDate,       // ví dụ: "2026-02-03"
-    noidunghoc: noiDungHoc,
+    noidungday: noiDungHoc,
     malop: currentLop?.malop || ""
   };
         const { error2 } = await supabase
-      .from("tbl_noidunghoc")
-      .upsert(data_noidunghoc, { onConflict: "malop,ngay" });
+      .from("tbl_noidungday")
+      .upsert(data_noidungday, { onConflict: "malop,ngay" });
     
     alert(error ? "❌ Lỗi lưu!" : "✅ Lưu thành công!");
   }
