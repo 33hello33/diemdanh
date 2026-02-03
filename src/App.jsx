@@ -174,7 +174,7 @@ useEffect(() => {
     noidunghoc: noiDungHoc,
     malop: maLop
   };
-        const { error } = await supabase
+        const { error2 } = await supabase
       .from("tbl_noidunghoc")
       .upsert(data_noidunghoc, { onConflict: "mahv,ngay" });
     
