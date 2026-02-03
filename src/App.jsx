@@ -473,7 +473,7 @@ async function loadThongKe() {
               ))}
             </select>
             
-<input placeholder="Nội dung bài giảng hôm nay..." type="text" value="" style="width: 100%; margin-top: 6px; padding: 6px; border-radius: 6px; border: 1px solid rgb(204, 204, 204);">
+<input placeholder="Nội dung bài giảng hôm nay..." type="text" value="" style="width: 100%; margin-top: 6px; padding: 6px; border-radius: 6px; border: 1px solid rgb(204, 204, 204);"/>
   
             <p>Tổng số học viên: {soLuongHocVien}</p>
 
