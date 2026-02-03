@@ -485,12 +485,19 @@ async function loadThongKe() {
               ))}
             </select>
             
-<input
-  type="text"
-  placeholder="Nội dung bài giảng hôm nay"
-  value={noiDungHoc}
-  onChange={(e) => setNoiDungHoc(e.target.value)}
-/>
+          <textarea
+            rows={4}
+            placeholder="Nội dung bài giảng hôm nay"
+            value={noiDungHoc}
+            onChange={(e) => setNoiDungHoc(e.target.value)}
+            style={{
+                          width: "100%",
+                          padding: "10px",
+                          marginBottom: "12px",
+                          borderRadius: "6px",
+                          border: "1px solid #ccc",
+                        }}
+            />
   
             <p>Tổng số học viên: {soLuongHocVien}</p>
 
