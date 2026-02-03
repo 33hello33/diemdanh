@@ -178,7 +178,7 @@ useEffect(() => {
   };
         const { error2 } = await supabase
       .from("tbl_noidunghoc")
-      .upsert(data_noidunghoc, { onConflict: "mahv,ngay" });
+      .upsert(data_noidunghoc, { onConflict: "malop,ngay" });
     
     alert(error ? "❌ Lỗi lưu!" : "✅ Lưu thành công!");
   }
