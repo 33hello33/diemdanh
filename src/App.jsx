@@ -169,10 +169,12 @@ useEffect(() => {
       .from("tbl_diemdanh")
       .upsert(payload, { onConflict: "mahv,ngay" });
 
-      const data_noidunghoc = {
-    ngay: ngayHoc,       // ví dụ: "2026-02-03"
+    const currentLop = lopList.find(x => x.malop === selectedLop);
+
+    const data_noidunghoc = {
+    ngay: selectedDate,       // ví dụ: "2026-02-03"
     noidunghoc: noiDungHoc,
-    malop: maLop
+    malop: currentLop?.malop || ""
   };
         const { error2 } = await supabase
       .from("tbl_noidunghoc")
