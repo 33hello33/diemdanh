@@ -529,7 +529,7 @@ async function loadThongKe() {
                 />
                  <button
     onClick={async () => {
-      const note = notes[student.mahv]?.trim() || "";
+      const note = notes[s.mahv]?.trim() || "";
       if (!note) {
         alert("⚠️ Vui lòng nhập ghi chú trước khi gửi cảnh báo!");
         return;
@@ -543,7 +543,7 @@ async function loadThongKe() {
       {
         tenlop: currentLop?.tenlop || "",
         tennv: username,         // tên giáo viên
-        tenhv: student.tenhv,      // tên học viên
+        tenhv: s.tenhv,      // tên học viên
         ghichu: note,            // ghi chú
         time: now,               // thời gian gửi
         tinhtrang: 'Chưa làm',
