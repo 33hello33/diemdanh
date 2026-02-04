@@ -87,42 +87,53 @@ function App() {
     });
     setAttendance(att);
     setNotes(note);
-      // ⭐⭐ GỌI LOAD DỮ LIỆU ĐIỂM DANH HÔM NAY
-  await loadTodayData();
+    
+    // Load dữ liệu điểm danh ngày đã chọn
+    await loadAttendanceByDate(maLop, selectedDate);
   }
-async function loadTodayData() {
-  const today = new Date().toISOString().split("T")[0];
-
-  const { data, error } = await supabase
-    .from("tbl_diemdanh")
-    .select("*")
-    .eq("ngay", today);
-
-  if (error || !data) return;
-
-  setAttendance((prev) => {
-    const updated = { ...prev };
-    data.forEach((row) => {
-      if (updated[row.mahv] !== undefined)
-        updated[row.mahv] = row.trangthai;
-    });
-    return updated;
-  });
-
-  setNotes((prev) => {
-    const updated = { ...prev };
-    data.forEach((row) => {
-      if (updated[row.mahv] !== undefined)
-        updated[row.mahv] = row.ghichu || "";
-    });
-    return updated;
-  });
-}
-
-  function handleAttendanceChange(mahv, status) {
-    setAttendance((prev) => ({ ...prev, [mahv]: status }));
+// LOAD ĐIỂM DANH NGÀY (date)
+  async function loadAttendanceByDate(maLop, dateStr) {
+ const resNoiDung = await supabase
+    .from("tbl_noidungday")
+    .select("noidungday")
+    .eq("malop", maLop)
+    .eq("ngay", dateStr)
+      .maybeSingle();
+    
+ if (resNoiDung.data) {
+    setNoiDungHoc(resNoiDung.data.noidungday);
+  } else {
+    // 👉 CHƯA ĐIỂM DANH → reset textarea
+    setNoiDungHoc("");
   }
+    
+    const { data } = await supabase
+      .from("tbl_diemdanh")
+      .select("*")
+      .eq("ngay", dateStr);
 
+    if (!data) return;
+
+    setAttendance((prev) => {
+      const updated = { ...prev };
+      data.forEach((row) => {
+        if (updated[row.mahv] !== undefined) {
+          updated[row.mahv] = row.trangthai;
+        }
+      });
+      return updated;
+    });
+
+    setNotes((prev) => {
+      const updated = { ...prev };
+      data.forEach((row) => {
+        if (updated[row.mahv] !== undefined) {
+          updated[row.mahv] = row.ghichu || "";
+        }
+      });
+      return updated;
+    });
+  }
   async function handleSubmit() {
     const diemDanhNgay = selectedDate;
     const payload = students.map((s) => ({
@@ -323,7 +334,12 @@ return (
                       name={`attendance-${student.mahv}`}
                       value={status}
                       checked={attendance[student.mahv] === status}
-                      onChange={() => handleAttendanceChange(student.mahv, status)}
+                                onChange={() =>
+                          setAttendance((prev) => ({
+                            ...prev,
+                            [student.mahv]: status,
+                          }))
+                        }
                     /> {status}
                   </label>
                 ))}
