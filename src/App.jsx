@@ -334,7 +334,7 @@ return (
                             onChange={() =>
                           setAttendance((prev) => ({
                             ...prev,
-                            [s.mahv]: st,
+                            [student.mahv]: status,
                           }))
                         }
                     /> {status}
