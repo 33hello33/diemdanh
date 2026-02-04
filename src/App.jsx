@@ -110,9 +110,7 @@ useEffect(() => {
     // Set mặc định
     const att = {};
     const note = {};
-    const defaultStatus = isSaturday(selectedDate)
-      ? "Vắng mặt"
-      : "Có mặt";
+    const defaultStatus = "Có mặt";
 
     (hv || []).forEach((s) => {
       att[s.mahv] = defaultStatus;
