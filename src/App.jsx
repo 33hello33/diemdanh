@@ -130,9 +130,8 @@ useEffect(() => {
     .from("tbl_noidungday")
     .select("noidungday")
     .eq("malop", maLop)
-    .eq("ngay", dateStr)
-    .maybeSingle();
-
+    .eq("ngay", dateStr);
+console.log(data1);
  if (data1) {
     setNoiDungHoc(data1.noidungday);
   } else {
