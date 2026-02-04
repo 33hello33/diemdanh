@@ -126,20 +126,15 @@ useEffect(() => {
 
   // LOAD ĐIỂM DANH NGÀY (date)
   async function loadAttendanceByDate(maLop, dateStr) {
- const { data1, error }  = await supabase
+ const resNoiDung = await supabase
     .from("tbl_noidungday")
     .select("noidungday")
     .eq("malop", maLop)
     .eq("ngay", dateStr)
       .maybeSingle();
-console.log(data1);
     
-if (error) {
-  console.error(error);
-  return;
-}
- if (data1) {
-    setNoiDungHoc(data1.noidungday);
+ if (resNoiDung.data) {
+    setNoiDungHoc(resNoiDung.data);
   } else {
     // 👉 CHƯA ĐIỂM DANH → reset textarea
     setNoiDungHoc("");
