@@ -126,6 +126,20 @@ useEffect(() => {
 
   // LOAD ĐIỂM DANH NGÀY (date)
   async function loadAttendanceByDate(maLop, dateStr) {
+ const resNoiDung = await supabase
+    .from("tbl_noidungday")
+    .select("noidungday")
+    .eq("malop", maLop)
+    .eq("ngay", dateStr)
+      .maybeSingle();
+    
+ if (resNoiDung.data) {
+    setNoiDungHoc(resNoiDung.data.noidungday);
+  } else {
+    // 👉 CHƯA ĐIỂM DANH → reset textarea
+    setNoiDungHoc("");
+  }
+    
     const { data } = await supabase
       .from("tbl_diemdanh")
       .select("*")
@@ -486,7 +500,7 @@ async function loadThongKe() {
           <textarea
             rows={4}
             placeholder="Nội dung bài giảng hôm nay"
-            value={noiDungHoc}
+            value= {noiDungHoc}
             onChange={(e) => setNoiDungHoc(e.target.value)}
             style={{
                           width: "100%",
