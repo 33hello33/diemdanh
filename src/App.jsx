@@ -17,7 +17,8 @@ function App() {
   const [role, setRole] = useState("");
   const [soLuongHocVien, setSoLuongHocVien] = useState(0);
   const [notes, setNotes] = useState({});
-
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split("T")[0]);
+  
   // tìm theo tên
   const [searchName, setSearchName] = useState("");
   const [searchResults, setSearchResults] = useState([]);
@@ -86,47 +87,44 @@ function App() {
     });
     setAttendance(att);
     setNotes(note);
-     // ⭐⭐ GỌI LOAD DỮ LIỆU ĐIỂM DANH HÔM NAY
-  await loadTodayData();
+    // Load dữ liệu điểm danh ngày đã chọn
+    await loadAttendanceByDate(maLop, selectedDate);
   }
-async function loadTodayData() {
-  const today = new Date().toISOString().split("T")[0];
+// LOAD ĐIỂM DANH NGÀY (date)
+  async function loadAttendanceByDate(maLop, dateStr) {
+    const { data } = await supabase
+      .from("tbl_diemdanh")
+      .select("*")
+      .eq("ngay", dateStr);
 
-  const { data, error } = await supabase
-    .from("tbl_diemdanh")
-    .select("*")
-    .eq("ngay", today);
+    if (!data) return;
 
-  if (error || !data) return;
-
-  setAttendance((prev) => {
-    const updated = { ...prev };
-    data.forEach((row) => {
-      if (updated[row.mahv] !== undefined)
-        updated[row.mahv] = row.trangthai;
+    setAttendance((prev) => {
+      const updated = { ...prev };
+      data.forEach((row) => {
+        if (updated[row.mahv] !== undefined) {
+          updated[row.mahv] = row.trangthai;
+        }
+      });
+      return updated;
     });
-    return updated;
-  });
 
-  setNotes((prev) => {
-    const updated = { ...prev };
-    data.forEach((row) => {
-      if (updated[row.mahv] !== undefined)
-        updated[row.mahv] = row.ghichu || "";
+    setNotes((prev) => {
+      const updated = { ...prev };
+      data.forEach((row) => {
+        if (updated[row.mahv] !== undefined) {
+          updated[row.mahv] = row.ghichu || "";
+        }
+      });
+      return updated;
     });
-    return updated;
-  });
-}
-
-  function handleAttendanceChange(mahv, status) {
-    setAttendance((prev) => ({ ...prev, [mahv]: status }));
   }
 
   async function handleSubmit() {
-    const today = new Date().toISOString().split("T")[0];
+    const diemDanhNgay = selectedDate;
     const payload = students.map((s) => ({
       mahv: s.mahv,
-      ngay: today,
+      ngay: diemDanhNgay,
       trangthai: attendance[s.mahv],
       ghichu: notes[s.mahv] || "",
     }));
@@ -168,10 +166,10 @@ async function loadTodayData() {
   }, [searchName]);
 
   async function handleSearchSubmit() {
-    const today = new Date().toISOString().split("T")[0];
+        const diemDanhNgay = selectedDate;
     const payload = searchResults.map((s) => ({
       mahv: s.mahv,
-      ngay: today,
+      ngay: diemDanhNgay,
       trangthai: searchAttendance[s.mahv],
       ghichu: searchNotes[s.mahv] || "",
     }));
@@ -205,11 +203,11 @@ async function loadTodayData() {
 
   async function handleMahvSubmit() {
     if (!mahvResult) return;
-    const today = new Date().toISOString().split("T")[0];
+        const diemDanhNgay = selectedDate;
     const payload = [
       {
         mahv: mahvResult.mahv,
-        ngay: today,
+        ngay: diemDanhNgay,
         trangthai: mahvAttendance,
         ghichu: mahvNote,
       },
@@ -282,6 +280,12 @@ return (
         {/* ---------- PHẦN 1: LỚP ---------- */}
         <div style={boxStyle}>
           <h2 style={{ color: "#2c3e50" }}>📘 Điểm danh theo lớp</h2>
+          {(role === "Quản lý" || role === "Nhân viên VP") && (
+            <div style={{ margin: "12px 0" }}>
+              <label>📅 Chọn ngày điểm danh:</label>
+              <input type="date" value={selectedDate} onChange={(e) => setSelectedDate(e.target.value)} style={{ marginLeft: "10px", padding: "6px" }} />
+            </div>
+          )}
           <select
             value={selectedLop}
             onChange={(e) => setSelectedLop(e.target.value)}
@@ -316,7 +320,12 @@ return (
                       name={`attendance-${student.mahv}`}
                       value={status}
                       checked={attendance[student.mahv] === status}
-                      onChange={() => handleAttendanceChange(student.mahv, status)}
+                      onChange={() =>
+                          setAttendance((prev) => ({
+                            ...prev,
+                            [student.mahv]: status,
+                          }))
+                        }
                     /> {status}
                   </label>
                 ))}
