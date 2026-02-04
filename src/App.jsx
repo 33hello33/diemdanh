@@ -126,12 +126,19 @@ useEffect(() => {
 
   // LOAD ĐIỂM DANH NGÀY (date)
   async function loadAttendanceByDate(maLop, dateStr) {
-   const { noidung } = await supabase
-        .from("tbl_noidunghoc")
-        .select("*")
-        .eq("ngay", dateStr);
+ const { data1 } = await supabase
+    .from("tbl_noidunghoc")
+    .select("noidunghoc")
+    .eq("malop", malop)
+    .eq("ngay", ngay)
+    .maybeSingle();
 
-    if (!noidung) return;
+ if (data1) {
+    setNoiDungHoc(data1.noidunghoc);
+  } else {
+    // 👉 CHƯA ĐIỂM DANH → reset textarea
+    setNoiDungHoc("");
+  }
 
     setNoiDungHoc(noidung);
     
