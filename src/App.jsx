@@ -134,7 +134,7 @@ useEffect(() => {
       .maybeSingle();
     
  if (resNoiDung.data) {
-    setNoiDungHoc(resNoiDung.data);
+    setNoiDungHoc(resNoiDung.data.noidungday);
   } else {
     // 👉 CHƯA ĐIỂM DANH → reset textarea
     setNoiDungHoc("");
