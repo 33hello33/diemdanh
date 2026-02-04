@@ -332,7 +332,12 @@ return (
                       name={`attendance-${student.mahv}`}
                       value={status}
                       checked={attendance[student.mahv] === status}
-                      onChange={() => handleAttendanceChange(student.mahv, status)}
+                       onChange={() =>
+                          setAttendance((prev) => ({
+                            ...prev,
+                            [s.mahv]: st,
+                          }))
+                        }
                     /> {status}
                   </label>
                 ))}
