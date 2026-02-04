@@ -18,7 +18,7 @@ function App() {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split("T")[0]);
   const [soLuongHocVien, setSoLuongHocVien] = useState(0);
   const [notes, setNotes] = useState({});
-
+  
   // tìm theo tên
   const [searchName, setSearchName] = useState("");
   const [searchResults, setSearchResults] = useState([]);
@@ -90,40 +90,38 @@ function App() {
     });
     setAttendance(att);
     setNotes(note);
-      // ⭐⭐ GỌI LOAD DỮ LIỆU ĐIỂM DANH HÔM NAY
-  await loadTodayData();
+    
+    // Load dữ liệu điểm danh ngày đã chọn
+    await loadAttendanceByDate(maLop, selectedDate);
   }
-async function loadTodayData() {
-  const today = new Date().toISOString().split("T")[0];
+// LOAD ĐIỂM DANH NGÀY (date)
+  async function loadAttendanceByDate(maLop, dateStr) {
+    const { data } = await supabase
+      .from("tbl_diemdanh")
+      .select("*")
+      .eq("ngay", dateStr);
 
-  const { data, error } = await supabase
-    .from("tbl_diemdanh")
-    .select("*")
-    .eq("ngay", today);
+    if (!data) return;
 
-  if (error || !data) return;
-
-  setAttendance((prev) => {
-    const updated = { ...prev };
-    data.forEach((row) => {
-      if (updated[row.mahv] !== undefined)
-        updated[row.mahv] = row.trangthai;
+    setAttendance((prev) => {
+      const updated = { ...prev };
+      data.forEach((row) => {
+        if (updated[row.mahv] !== undefined) {
+          updated[row.mahv] = row.trangthai;
+        }
+      });
+      return updated;
     });
-    return updated;
-  });
 
-  setNotes((prev) => {
-    const updated = { ...prev };
-    data.forEach((row) => {
-      if (updated[row.mahv] !== undefined)
-        updated[row.mahv] = row.ghichu || "";
+    setNotes((prev) => {
+      const updated = { ...prev };
+      data.forEach((row) => {
+        if (updated[row.mahv] !== undefined) {
+          updated[row.mahv] = row.ghichu || "";
+        }
+      });
+      return updated;
     });
-    return updated;
-  });
-}
-
-  function handleAttendanceChange(mahv, status) {
-    setAttendance((prev) => ({ ...prev, [mahv]: status }));
   }
 
   async function handleSubmit() {
@@ -326,7 +324,12 @@ return (
                       name={`attendance-${student.mahv}`}
                       value={status}
                       checked={attendance[student.mahv] === status}
-                      onChange={() => handleAttendanceChange(student.mahv, status)}
+                          onChange={() =>
+                          setAttendance((prev) => ({
+                            ...prev,
+                            [student.mahv]: status,
+                          }))
+                        }
                     /> {status}
                   </label>
                 ))}
