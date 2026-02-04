@@ -129,8 +129,8 @@ useEffect(() => {
  const { data1 } = await supabase
     .from("tbl_noidunghoc")
     .select("noidunghoc")
-    .eq("malop", malop)
-    .eq("ngay", ngay)
+    .eq("malop", maLop)
+    .eq("ngay", dateStr)
     .maybeSingle();
 
  if (data1) {
