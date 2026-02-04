@@ -128,6 +128,15 @@ useEffect(() => {
 
   // LOAD ĐIỂM DANH NGÀY (date)
   async function loadAttendanceByDate(maLop, dateStr) {
+   const { noidung } = await supabase
+        .from("tbl_noidunghoc")
+        .select("*")
+        .eq("ngay", dateStr);
+
+    if (!noidung) return;
+
+    setNoiDungHoc(noidung);
+    
     const { data } = await supabase
       .from("tbl_diemdanh")
       .select("*")
@@ -488,7 +497,7 @@ async function loadThongKe() {
           <textarea
             rows={4}
             placeholder="Nội dung bài giảng hôm nay"
-            value={noiDungHoc}
+            value= ''
             onChange={(e) => setNoiDungHoc(e.target.value)}
             style={{
                           width: "100%",
