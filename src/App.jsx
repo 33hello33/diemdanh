@@ -139,8 +139,6 @@ useEffect(() => {
     // 👉 CHƯA ĐIỂM DANH → reset textarea
     setNoiDungHoc("");
   }
-
-    setNoiDungHoc(noidung);
     
     const { data } = await supabase
       .from("tbl_diemdanh")
