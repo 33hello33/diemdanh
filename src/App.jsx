@@ -495,7 +495,7 @@ async function loadThongKe() {
           <textarea
             rows={4}
             placeholder="Nội dung bài giảng hôm nay"
-            value= ''
+            value= {noiDungHoc}
             onChange={(e) => setNoiDungHoc(e.target.value)}
             style={{
                           width: "100%",
