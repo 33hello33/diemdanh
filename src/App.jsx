@@ -87,7 +87,7 @@ useEffect(() => {
       .select("malop, tenlop")
       .neq("daxoa", "Đã Xóa");
 
-    if (role === "Giáo viên") q = q.eq("manv", manv);
+    //if (role === "Giáo viên") q = q.eq("manv", manv);
 
     const { data } = await q;
     setLopList(data || []);
@@ -96,23 +96,51 @@ useEffect(() => {
   // LẤY DANH SÁCH HỌC VIÊN + ĐIỂM DANH NGÀY ĐÓ
   async function fetchStudents(maLop) {
     if (!maLop) return;
+    
+  const mapThu = {
+    0: "cn",
+    1: "t2",
+    2: "t3",
+    3: "t4",
+    4: "t5",
+    5: "t6",
+    6: "t7",
+  };
 
-    const { data: hv } = await supabase
+  const thuHienTai = mapThu[new Date(selectedDate).getDay()];
+    
+    const { data: hv, error } = await supabase
       .from("tbl_hv")
       .select("*")
       .eq("malop", maLop)
       .neq("trangthai", "Đã Nghỉ")
       .order("tenhv", { ascending: true });
+    
+  if (error) {
+    console.error(error);
+    return;
+  }
+    
+    const hvTheoNgayHoc = hv.filter((item) => {
+      if (!item.lichhoc) return false;
+  
+      const dsThu = item.lichhoc
+        .toLowerCase()
+        .split(",")
+        .map((s) => s.trim());
+  
+      return dsThu.includes(thuHienTai);
+    });
 
-    setStudents(hv || []);
-    setSoLuongHocVien(hv?.length || 0);
+    setStudents(hvTheoNgayHoc || []);
+    setSoLuongHocVien(hvTheoNgayHoc?.length || 0);
 
     // Set mặc định
     const att = {};
     const note = {};
     const defaultStatus = "Có mặt";
 
-    (hv || []).forEach((s) => {
+    (hvTheoNgayHoc || []).forEach((s) => {
       att[s.mahv] = defaultStatus;
       note[s.mahv] = "";
     });
@@ -126,20 +154,6 @@ useEffect(() => {
 
   // LOAD ĐIỂM DANH NGÀY (date)
   async function loadAttendanceByDate(maLop, dateStr) {
- const resNoiDung = await supabase
-    .from("tbl_noidungday")
-    .select("noidungday")
-    .eq("malop", maLop)
-    .eq("ngay", dateStr)
-      .maybeSingle();
-    
- if (resNoiDung.data) {
-    setNoiDungHoc(resNoiDung.data.noidungday);
-  } else {
-    // 👉 CHƯA ĐIỂM DANH → reset textarea
-    setNoiDungHoc("");
-  }
-    
     const { data } = await supabase
       .from("tbl_diemdanh")
       .select("*")
