@@ -16,7 +16,6 @@ function App() {
   // LỚP
   const [lopList, setLopList] = useState([]);
   const [selectedLop, setSelectedLop] = useState("");
-  const [noiDungHoc, setNoiDungHoc] = useState("");
   
   // HỌC VIÊN
   const [students, setStudents] = useState([]);
@@ -197,15 +196,6 @@ useEffect(() => {
 
     const currentLop = lopList.find(x => x.malop === selectedLop);
 
-    const data_noidungday = {
-    ngay: selectedDate,       // ví dụ: "2026-02-03"
-    noidungday: noiDungHoc,
-    malop: currentLop?.malop || ""
-  };
-        const { error2 } = await supabase
-      .from("tbl_noidungday")
-      .upsert(data_noidungday, { onConflict: "malop,ngay" });
-    
     alert(error ? "❌ Lỗi lưu!" : "✅ Lưu thành công!");
   }
 
@@ -510,20 +500,6 @@ async function loadThongKe() {
                 </option>
               ))}
             </select>
-            
-          <textarea
-            rows={4}
-            placeholder="Nội dung bài giảng hôm nay"
-            value= {noiDungHoc}
-            onChange={(e) => setNoiDungHoc(e.target.value)}
-            style={{
-                          width: "100%",
-                          padding: "10px",
-                          marginBottom: "12px",
-                          borderRadius: "6px",
-                          border: "1px solid #ccc",
-                        }}
-            />
   
             <p>Tổng số học viên: {soLuongHocVien}</p>
 
