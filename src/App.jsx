@@ -194,9 +194,32 @@ useEffect(() => {
       .from("tbl_diemdanh")
       .upsert(payload, { onConflict: "mahv,ngay" });
 
-    const currentLop = lopList.find(x => x.malop === selectedLop);
+    // 3️⃣ Lấy mã lớp hiện tại
+  const currentLop = lopList.find((x) => x.malop === selectedLop);
+  if (!currentLop) {
+    alert("❌ Không xác định được lớp!");
+    return;
+  }
 
-    alert(error ? "❌ Lỗi lưu!" : "✅ Lưu thành công!");
+  // 4️⃣ Upsert nội dung dạy (hoặc log ngày dạy)
+  const payloadNoiDung = {
+    ngay: selectedDate,
+    malop: currentLop.malop,
+    manv: manv,
+  };
+
+  const { error: errNoiDung } = await supabase
+    .from("tbl_lichsudiemdanh")
+    .upsert(payloadNoiDung, { onConflict: "malop,ngay" });
+
+  if (errNoiDung) {
+    console.error(errNoiDung);
+    alert("⚠️ Điểm danh đã lưu, nhưng lỗi lưu nội dung dạy!");
+    return;
+  }
+
+  // 5️⃣ OK hết
+  alert("✅ Lưu thành công!");
   }
 
   // --------------------------------------------------------------------
