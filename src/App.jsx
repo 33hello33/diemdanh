@@ -290,6 +290,7 @@ async function loadThongKe() {
   const firstDayStr = firstDay.toISOString().split("T")[0];
 
   const today = new Date().toISOString().split("T")[0];
+  const tomorrow = new Date(Date.now() + 86400000).toISOString().split("T")[0];
   
   // 1. Tổng học viên ĐANG HỌC
   const { data: hv } = await supabase
@@ -367,10 +368,6 @@ const { data: hdtoday } = await supabase
   const sumHDtoday =
     hdtoday
       ?.map((x) => Number(x.dadong.replace(/,/g, "")))
-      .reduce((a, b) => a + b, 0) || 0;
-    const sumPCCtoday =
-    pcctoday
-      ?.map((x) => Number(x.tongcong.replace(/,/g, "")))
       .reduce((a, b) => a + b, 0) || 0;
   
   setTkThuTrongNgay(sumBHtoday + sumHDtoday);
