@@ -49,6 +49,9 @@ function App() {
   const [tkThuBH, setTkThuBH] = useState(0);
   const [tkChi, setTkChi] = useState(0);
   
+    const [tkHVHoctrongngay, setTkHVHoctrongngay] = useState(0);
+   const [tkHVNghitrongngay, setTkHVNghitrongngay] = useState(0);
+   const [tkThuTrongNgay, setTkThuTrongNgay] = useState(0);
   // -----------------------------------------------------
   // FUNCS
   // -----------------------------------------------------
@@ -341,6 +344,55 @@ async function loadThongKe() {
       .reduce((a, b) => a + b, 0) || 0;
 
   setTkChi(sumChi);
+
+  // 5. Tổng thu trong ngày
+  const { data: bhtoday } = await supabase
+    .from("tbl_billhanghoa")
+    .select("dadong")
+    .or("daxoa.is.null,daxoa.neq.Đã Xóa")
+    .gte("ngaylap", today)
+    .lte("ngaylap", tomorrow);
+  
+const { data: hdtoday } = await supabase
+    .from("tbl_hd")
+    .select("dadong")
+    .or("daxoa.is.null,daxoa.neq.Đã Xóa")
+    .gte("ngaylap", today)
+    .lte("ngaylap", tomorrow);
+
+  const sumBHtoday =
+    bhtoday
+      ?.map((x) => Number(x.dadong.replace(/,/g, "")))
+      .reduce((a, b) => a + b, 0) || 0;
+  const sumHDtoday =
+    hdtoday
+      ?.map((x) => Number(x.dadong.replace(/,/g, "")))
+      .reduce((a, b) => a + b, 0) || 0;
+    const sumPCCtoday =
+    pcctoday
+      ?.map((x) => Number(x.tongcong.replace(/,/g, "")))
+      .reduce((a, b) => a + b, 0) || 0;
+  
+  setTkThuTrongNgay(sumBHtoday + sumHDtoday);
+
+  // 6. Số học viên học trong ngày
+  const { data: ddcomat } = await supabase
+    .from("tbl_diemdanh")
+    .select("id")
+    .eq("trangthai", "Có mặt")
+    .eq("ngay", today)
+
+  setTkHVHoctrongngay(ddcomat?.length || 0);
+
+// 7. số học viên vắng mặt trong ngày
+  const { data: ddvangmat } = await supabase
+    .from("tbl_diemdanh")
+    .select("id")
+    .neq("trangthai", "Có mặt")
+    .eq("ngay", today)
+
+  setTkHVNghitrongngay(ddvangmat?.length || 0);
+  
 }
   // -----------------------------------------------------
   // UI
@@ -443,6 +495,9 @@ async function loadThongKe() {
     <p>💰 Tổng thu HP tháng này: <b>{tkThuHP.toLocaleString()}đ</b></p>
     <p>🛒 Tông thu BH tháng này: <b>{tkThuBH.toLocaleString()}đ</b></p>
     <p>📉 Tổng phiếu chi tháng này: <b>{tkChi.toLocaleString()}đ</b></p>
+    <p>👨‍🎓 Số HV đi học trong ngày: <b>{tkHVHoctrongngay.toLocaleString()}đ</b></p>
+    <p>👨‍🎓 Số HV nghỉ học trong ngày: <b>{tkHVNghitrongngay.toLocaleString()}đ</b></p>
+    <p>💰 Tổng Thu hôm nay <b>{tkThuTrongNgay.toLocaleString()}đ</b></p>
   </div>
 )}
 
