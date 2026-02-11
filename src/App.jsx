@@ -514,7 +514,44 @@ return (
               <div className="glass-card">
                 <h2>🔎 Điểm danh nhanh</h2>
                 <input type="text" className="form-control" placeholder="Tìm tên..." value={searchName} onChange={(e) => setSearchName(e.target.value)} />
-                {/* ... Render search kết quả tương tự ... */}
+                {searchResults.map((s) => (
+            <div key={s.mahv} style={{
+              padding: "16px", borderRadius: "10px", boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+              backgroundColor: "#fff", borderLeft: "5px solid #3498db", marginBottom: "12px"
+            }}>
+              <div style={{ fontWeight: "600", fontSize: "16px", marginBottom: "8px", color: "#34495e" }}>
+                {s.tenhv}
+              </div>
+              <div style={{ display: "flex", gap: "20px", fontSize: "14px" }}>
+                {["Có mặt","Nghỉ phép","Nghỉ không phép"].map(status => (
+                  <label key={status}>
+                    <input
+                      type="radio"
+                      name={`search-attendance-${s.mahv}`}
+                      value={status}
+                      checked={searchAttendance[s.mahv] === status}
+                      onChange={() => setSearchAttendance(prev => ({ ...prev, [s.mahv]: status }))}
+                    /> {status}
+                  </label>
+                ))}
+              </div>
+              <input
+                type="text"
+                placeholder="Ghi chú..."
+                value={searchNotes[s.mahv] || ""}
+                onChange={(e) => setSearchNotes(prev => ({ ...prev, [s.mahv]: e.target.value }))}
+                style={{ width: "100%", marginTop: "6px", padding: "6px 8px", borderRadius: "6px", border: "1px solid #ccc" }}
+              />
+            </div>
+          ))}
+          {searchResults.length > 0 && (
+            <button
+              onClick={handleSearchSubmit}
+              style={{ width: "100%", padding: "12px", backgroundColor: "#2ecc71", color: "#fff", border: "none", borderRadius: "6px", fontWeight: "600" }}
+            >
+              ✅ Lưu điểm danh tìm tên
+            </button>
+          )}
               </div>
             </>
           )}
