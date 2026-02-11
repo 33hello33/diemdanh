@@ -430,9 +430,6 @@ return (
            </>
       ) : (
       <>
-        /* KHI ĐÃ VÀO HỆ THỐNG */
-            /* GIAO DIỆN NHÂN VIÊN (QUẢN LÝ / GIÁO VIÊN) */
-  
               <div className="glass-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span>Chào <strong>{username}</strong> ({role})</span>
                 <button className="btn btn-secondary btn-sm" onClick={() => setLoggedIn(false)}>Đăng xuất</button>
