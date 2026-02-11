@@ -299,7 +299,7 @@ const tomorrow = new Date(Date.now() + 86400000).toISOString().split("T")[0];
 
   const sumHP =
     hp
-      ?.map((x) => Number(x.dadong.replace(/,/g, "")))
+      ?.map((x) => Number((x.dadong || "0").replace(/,/g, "")))
       .reduce((a, b) => a + b, 0) || 0;
 
   setTkThuHP(sumHP);
@@ -314,7 +314,7 @@ const tomorrow = new Date(Date.now() + 86400000).toISOString().split("T")[0];
 
   const sumBH =
     bh
-      ?.map((x) => Number(x.dadong.replace(/,/g, "")))
+      ?.map((x) => Number((x.dadong || "0").replace(/,/g, "")))
       .reduce((a, b) => a + b, 0) || 0;
 
   setTkThuBH(sumBH);
@@ -360,11 +360,11 @@ const { data: hdtoday } = await supabase
   
   const sumBHtoday =
     bhtoday
-      ?.map((x) => Number(x.dadong.replace(/,/g, "")))
+      ?.map((x) => Number((x.dadong || "0").replace(/,/g, "")))
       .reduce((a, b) => a + b, 0) || 0;
   const sumHDtoday =
     hdtoday
-      ?.map((x) => Number(x.dadong.replace(/,/g, "")))
+      ?.map((x) => Number((x.dadong || "0").replace(/,/g, "")))
       .reduce((a, b) => a + b, 0) || 0;
     const sumPCCtoday =
     pcctoday
@@ -401,6 +401,7 @@ const { data: hdtoday } = await supabase
 return (
     <div className="container-wrapper" style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
       {!loggedIn ? (
+        <>
           {/* LOGIN UI - NHÂN VIÊN */}
           <div className="glass-card" style={{ maxWidth: "400px", margin: "20px auto", textAlign: "center" }}>
             <h2 style={{ marginBottom: "24px" }}>👨‍🏫 Nhân viên Đăng nhập</h2>
@@ -426,7 +427,9 @@ return (
               Đăng nhập
             </button>
           </div>
+           </>
       ) : (
+      <>
         /* KHI ĐÃ VÀO HỆ THỐNG */
             /* GIAO DIỆN NHÂN VIÊN (QUẢN LÝ / GIÁO VIÊN) */
   
