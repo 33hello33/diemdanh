@@ -281,7 +281,8 @@ async function loadThongKe() {
   const firstDayStr = firstDay.toISOString().split("T")[0];
 
   const today = new Date().toISOString().split("T")[0];
-
+const tomorrow = new Date(Date.now() + 86400000).toISOString().split("T")[0];
+  
   // 1. Tổng học viên ĐANG HỌC
   const { data: hv } = await supabase
     .from("tbl_hv")
@@ -341,19 +342,22 @@ async function loadThongKe() {
     .from("tbl_billhanghoa")
     .select("dadong")
     .or("daxoa.is.null,daxoa.neq.Đã Xóa")
-    .eq("ngaylap", today)
+    .gte("ngaylap", today)
+    .lte("ngaylap", tomorrow);
   
 const { data: hdtoday } = await supabase
     .from("tbl_hd")
     .select("dadong")
     .or("daxoa.is.null,daxoa.neq.Đã Xóa")
-    .eq("ngaylap", today)
+    .gte("ngaylap", today)
+    .lte("ngaylap", tomorrow);
   
   const { data: pcctoday } = await supabase
     .from("tbl_phieuchamcong")
     .select("tongcong")
     .or("daxoa.is.null,daxoa.neq.Đã Xóa")
-    .eq("ngaylap", today)
+    .gte("ngaylap", today)
+    .lte("ngaylap", tomorrow);
     .eq("daxacnhan", true)
   
   const sumBHtoday =
@@ -538,13 +542,13 @@ return (
                       <div className="stat-value">{tkChi.toLocaleString()}đ</div>
                     </div>
                     
-                    <div className="stat-card" style={{ borderColor: "var(--danger)" }}>
+                    <div className="stat-card" style={{ borderColor: "var(--warning)" }}>
                       <div className="stat-label">Số HV đi học trong ngày:</div>
-                      <div className="stat-value">{tkHVHoctrongngay.toLocaleString()}đ</div>
+                      <div className="stat-value">{tkHVHoctrongngay.toLocaleString()}</div>
                     </div>
-                    <div className="stat-card" style={{ borderColor: "var(--danger)" }}>
+                    <div className="stat-card" style={{ borderColor: "var(--warning)" }}>
                       <div className="stat-label">Số HV nghỉ học trong ngày:</div>
-                      <div className="stat-value">{tkHVNghitrongngay.toLocaleString()}đ</div>
+                      <div className="stat-value">{tkHVNghitrongngay.toLocaleString()}</div>
                     </div>
                     <div className="stat-card" style={{ borderColor: "var(--danger)" }}>
                       <div className="stat-label">Tổng Thu hôm nay</div>
