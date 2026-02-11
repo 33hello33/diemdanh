@@ -17,6 +17,8 @@ function App() {
   const [lopList, setLopList] = useState([]);
   const [selectedLop, setSelectedLop] = useState("");
   const [noiDungHoc, setNoiDungHoc] = useState("");
+  const [lichHoc, setLichHoc] = useState("");
+  const [gioHoc, setGioHoc] = useState("");
   
   // HỌC VIÊN
   const [students, setStudents] = useState([]);
@@ -84,7 +86,7 @@ useEffect(() => {
   async function fetchLopList(manv, role) {
     let q = supabase
       .from("tbl_lop")
-      .select("malop, tenlop")
+      .select("malop, tenlop, thoigianbieu, giohoc")
       .neq("daxoa", "Đã Xóa");
 
     if (role === "Giáo viên") q = q.eq("manv", manv);
@@ -169,15 +171,6 @@ useEffect(() => {
       .upsert(payload, { onConflict: "mahv,ngay" });
 
     const currentLop = lopList.find(x => x.malop === selectedLop);
-
-    const data_noidungday = {
-    ngay: selectedDate,       // ví dụ: "2026-02-03"
-    noidungday: noiDungHoc,
-    malop: currentLop?.malop || ""
-  };
-        const { error2 } = await supabase
-      .from("tbl_noidungday")
-      .upsert(data_noidungday, { onConflict: "malop,ngay" });
     
     alert(error ? "❌ Lỗi lưu!" : "✅ Lưu thành công!");
   }
@@ -186,7 +179,13 @@ useEffect(() => {
   // AUTO REFRESH KHI ĐỔI LỚP HOẶC ĐỔI NGÀY
   // --------------------------------------------------------------------
   useEffect(() => {
-    if (selectedLop) fetchStudents(selectedLop);
+    if (selectedLop) 
+    {
+      fetchStudents(selectedLop);
+      const currentLop = lopList.find(x => x.malop === selectedLop);
+      setLichHoc(currentLop.thoigianbieu);
+      setGioHoc(currentLop.giohoc);
+    }
   }, [selectedLop, selectedDate]);
 
   // --------------------------------------------------------------------
@@ -483,6 +482,8 @@ async function loadThongKe() {
                 </option>
               ))}
             </select>
+   <p>Lịch học: {lichHoc}</p>
+   <p>Giờ học: {gioHoc}</p>
    <p>Tổng số học viên: {soLuongHocVien}</p>
 
             {students.map((s) => (
