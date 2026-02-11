@@ -167,6 +167,7 @@ useEffect(() => {
       ngay: selectedDate,
       trangthai: attendance[s.mahv],
       ghichu: notes[s.mahv] || "",
+      malop: selectedLop,
     }));
 
     const { error } = await supabase
