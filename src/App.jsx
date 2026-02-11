@@ -47,6 +47,9 @@ function App() {
   const [tkThuBH, setTkThuBH] = useState(0);
   const [tkChi, setTkChi] = useState(0);
   
+  const [tkHVHoctrongngay, setTkHVHoctrongngay] = useState(0);
+   const [tkHVNghitrongngay, setTkHVNghitrongngay] = useState(0);
+   const [tkThuTrongNgay, setTkThuTrongNgay] = useState(0);
   // -----------------------------------------------------
   // FUNCS
   // -----------------------------------------------------
@@ -333,7 +336,60 @@ async function loadThongKe() {
 
   setTkChi(sumChi);
 }
+  
+ // 5. Tổng thu trong ngày
+  const { data: bhtoday } = await supabase
+    .from("tbl_billhanghoa")
+    .select("dadong")
+    .or("daxoa.is.null,daxoa.neq.Đã Xóa")
+    .eq("ngaylap", today)
+  
+const { data: hdtoday } = await supabase
+    .from("tbl_hd")
+    .select("dadong")
+    .or("daxoa.is.null,daxoa.neq.Đã Xóa")
+    .eq("ngaylap", today)
+  
+  const { data: pcctoday } = await supabase
+    .from("tbl_phieuchamcong")
+    .select("tongcong")
+    .or("daxoa.is.null,daxoa.neq.Đã Xóa")
+    .eq("ngaylap", today)
+    .eq("daxacnhan", true)
+  
+  const sumBHtoday =
+    bhtoday
+      ?.map((x) => Number(x.dadong.replace(/,/g, "")))
+      .reduce((a, b) => a + b, 0) || 0;
+  const sumHDtoday =
+    hdtoday
+      ?.map((x) => Number(x.dadong.replace(/,/g, "")))
+      .reduce((a, b) => a + b, 0) || 0;
+    const sumPCCtoday =
+    pcctoday
+      ?.map((x) => Number(x.tongcong.replace(/,/g, "")))
+      .reduce((a, b) => a + b, 0) || 0;
+  
+  setTkThuTrongNgay(sumBHtoday + sumHDtoday + sumPCCtoday);
 
+  // 6. Số học viên học trong ngày
+  const { data: ddcomat } = await supabase
+    .from("tbl_diemdanh")
+    .select("id")
+    .eq("trangthai", "Có mặt")
+    .eq("ngay", today)
+
+  setTkHVHoctrongngay(ddcomat?.length || 0);
+
+// 7. Tổng thu trong ngày
+  const { data: ddvangmat } = await supabase
+    .from("tbl_diemdanh")
+    .select("id")
+    .neq("trangthai", "Có mặt")
+    .eq("ngay", today)
+
+  setTkHVNghitrongngay(ddvangmat?.length || 0);
+  
   // --- STATE BỔ SUNG ---
 const [viewMode, setViewMode] = useState("login"); // "login", "staff", "parent"
 const [parentSearchMahv, setParentSearchMahv] = useState(""); // Lưu mã HV phụ huynh gõ
@@ -480,6 +536,20 @@ return (
                       <div className="stat-label">Tổng chi</div>
                       <div className="stat-value">{tkChi.toLocaleString()}đ</div>
                     </div>
+                    
+                    <div className="stat-card" style={{ borderColor: "var(--danger)" }}>
+                      <div className="stat-label">Số HV đi học trong ngày:</div>
+                      <div className="stat-value">{tkHVHoctrongngay.toLocaleString()}đ</div>
+                    </div>
+                    <div className="stat-card" style={{ borderColor: "var(--danger)" }}>
+                      <div className="stat-label">Số HV nghỉ học trong ngày:</div>
+                      <div className="stat-value">{tkHVNghitrongngay.toLocaleString()}đ</div>
+                    </div>
+                    <div className="stat-card" style={{ borderColor: "var(--danger)" }}>
+                      <div className="stat-label">Tổng Thu hôm nay</div>
+                      <div className="stat-value">{tkThuTrongNgay.toLocaleString()}đ</div>
+                    </div>
+                    
                   </div>
                 </div>
               )}
