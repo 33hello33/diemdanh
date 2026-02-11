@@ -393,51 +393,7 @@ const { data: hdtoday } = await supabase
   
 }
 
-  // --- STATE BỔ SUNG ---
-const [viewMode, setViewMode] = useState("login"); // "login", "staff", "parent"
-const [parentSearchMahv, setParentSearchMahv] = useState(""); // Lưu mã HV phụ huynh gõ
-const [tuitionData, setTuitionData] = useState([]); // Lưu dữ liệu học phí trả về
 
-// --- HÀM TRA CỨU DÀNH CHO PHỤ HUYNH (KHÔNG CẦN LOGIN) ---
-async function handleParentLookup(mahv) {
-  const code = mahv || parentSearchMahv;
-  if (!code) return alert("Vui lòng nhập mã học viên!");
-
-  // 1. Kiểm tra học viên có tồn tại không
-  const { data: student, error } = await supabase
-    .from("tbl_hv") // Tên bảng học viên 
-    .select("*")
-    .eq("mahv", code)
-    .neq("trangthai", "Đã Nghỉ")
-    .single();
-
-  if (error || !student) {
-    alert("❌ Không tìm thấy học viên hoặc mã HV không chính xác!");
-    return;
-  }
-
-  // 2. Nếu tìm thấy, chuyển sang chế độ Phụ huynh
-  setRole("Phụ huynh");
-  setLoggedIn(true);
-  setViewMode("parent");
-  
-  // 3. Tự động lấy dữ liệu học phí
-  fetchTuitionForParent(code);
-}
-
-// Hàm lấy dữ liệu học phí từ bảng hóa đơn
-async function fetchTuitionForParent(mahv) {
-  const { data, error } = await supabase
-    .from("tbl_hd") // Tên bảng hóa đơn từ file của bạn 
-    .select("*")
-    .eq("mahv", mahv)
-    .or("daxoa.is.null,daxoa.neq.Đã Xóa") // Lọc đơn chưa xóa 
-    .order("ngaylap", { ascending: false });
-
-  if (!error && data) {
-    setTuitionData(data);
-  }
-}
   // -----------------------------------------------------
   // UI
   // -----------------------------------------------------
@@ -445,8 +401,6 @@ async function fetchTuitionForParent(mahv) {
 return (
     <div className="container-wrapper" style={{ padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
       {!loggedIn ? (
-        /* SỬA LỖI: Sử dụng <> để bao 2 thẻ div cạnh nhau */
-        <>
           {/* LOGIN UI - NHÂN VIÊN */}
           <div className="glass-card" style={{ maxWidth: "400px", margin: "20px auto", textAlign: "center" }}>
             <h2 style={{ marginBottom: "24px" }}>👨‍🏫 Nhân viên Đăng nhập</h2>
@@ -472,48 +426,10 @@ return (
               Đăng nhập
             </button>
           </div>
-
-          {/* PHẦN PHỤ HUYNH */}
-          <div className="glass-card" style={{ maxWidth: "400px", margin: "20px auto", textAlign: "center" }}>
-            <h2 style={{ marginBottom: "24px" }}>👪 Dành cho Phụ huynh</h2>
-            <div className="form-group" style={{ marginBottom: "15px" }}>
-              <input
-                type="text"
-                className="form-control"
-                placeholder="Nhập mã học viên..."
-                value={parentSearchMahv}
-                onChange={(e) => setParentSearchMahv(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleParentLookup()}
-              />
-            </div>
-            {/* SỬA LỖI: Nút này phải gọi handleParentLookup, không phải handleLogin */}
-            <button className="btn btn-success" style={{ width: "100%" }} onClick={() => handleParentLookup()}>
-              Tra cứu
-            </button>
-          </div>
-        </>
       ) : (
         /* KHI ĐÃ VÀO HỆ THỐNG */
-        <>
-          {/* PHẦN PHỤ HUYNH DASHBOARD */}
-          {role === "Phụ huynh" ? (
-            <div className="glass-card">
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
-                <h2 style={{ margin: 0 }}>💰 Học phí: {parentSearchMahv}</h2>
-                <button className="btn btn-secondary btn-sm" onClick={() => setLoggedIn(false)}>Thoát</button>
-              </div>
-              
-              {tuitionData.length > 0 ? tuitionData.map((item, idx) => (
-                <div key={idx} className="student-item" style={{ borderLeft: "5px solid var(--success)", padding: '15px', marginBottom: '10px', background: '#fff' }}>
-                  <div><strong>Mã HD: {item.mahd}</strong> - Ngày: {item.ngaylap}</div>
-                  <div style={{ color: "var(--success)", fontWeight: "bold", fontSize: '1.1rem' }}>Số tiền: {item.dadong}đ</div>
-                  <div style={{ fontSize: '12px', color: '#666' }}>Nội dung: {item.ghichu || 'Không có ghi chú'}</div>
-                </div>
-              )) : <p className="text-muted">Chưa có dữ liệu học phí cho học viên này.</p>}
-            </div>
-          ) : (
             /* GIAO DIỆN NHÂN VIÊN (QUẢN LÝ / GIÁO VIÊN) */
-            <>
+  
               <div className="glass-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span>Chào <strong>{username}</strong> ({role})</span>
                 <button className="btn btn-secondary btn-sm" onClick={() => setLoggedIn(false)}>Đăng xuất</button>
