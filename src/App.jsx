@@ -335,8 +335,7 @@ async function loadThongKe() {
       .reduce((a, b) => a + b, 0) || 0;
 
   setTkChi(sumChi);
-}
-  
+
  // 5. Tổng thu trong ngày
   const { data: bhtoday } = await supabase
     .from("tbl_billhanghoa")
@@ -390,6 +389,8 @@ const { data: hdtoday } = await supabase
 
   setTkHVNghitrongngay(ddvangmat?.length || 0);
   
+}
+
   // --- STATE BỔ SUNG ---
 const [viewMode, setViewMode] = useState("login"); // "login", "staff", "parent"
 const [parentSearchMahv, setParentSearchMahv] = useState(""); // Lưu mã HV phụ huynh gõ
