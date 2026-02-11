@@ -492,8 +492,8 @@ const { data: hdtoday } = await supabase
     <p>💰 Tổng thu HP tháng này: <b>{tkThuHP.toLocaleString()}đ</b></p>
     <p>🛒 Tông thu BH tháng này: <b>{tkThuBH.toLocaleString()}đ</b></p>
     <p>📉 Tổng phiếu chi tháng này: <b>{tkChi.toLocaleString()}đ</b></p>
-    <p>👨‍🎓 Số HV đi học trong ngày: <b>{tkHVHoctrongngay.toLocaleString()}đ</b></p>
-    <p>👨‍🎓 Số HV nghỉ học trong ngày: <b>{tkHVNghitrongngay.toLocaleString()}đ</b></p>
+    <p>👨‍🎓 Số HV đi học trong ngày: <b>{tkHVHoctrongngay.toLocaleString()}</b></p>
+    <p>👨‍🎓 Số HV nghỉ học trong ngày: <b>{tkHVNghitrongngay.toLocaleString()}</b></p>
     <p>💰 Tổng Thu hôm nay <b>{tkThuTrongNgay.toLocaleString()}đ</b></p>
   </div>
 )}
