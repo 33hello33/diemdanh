@@ -357,8 +357,8 @@ const { data: hdtoday } = await supabase
     .select("tongcong")
     .or("daxoa.is.null,daxoa.neq.Đã Xóa")
     .gte("ngaylap", today)
-    .lte("ngaylap", tomorrow);
-    .eq("daxacnhan", true)
+    .lte("ngaylap", tomorrow)
+    .eq("daxacnhan", true);
   
   const sumBHtoday =
     bhtoday
