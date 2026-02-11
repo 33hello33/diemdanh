@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
-const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
+const supabaseAnonKey = process.env.REACT_APP_SUPABASE_PUBLISHABLE_DEFAULT_KEY;
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 function App() {
@@ -110,9 +110,7 @@ useEffect(() => {
     // Set mặc định
     const att = {};
     const note = {};
-    const defaultStatus = isSaturday(selectedDate)
-      ? "Nghỉ không phép"
-      : "Có mặt";
+    const defaultStatus = "Có mặt";
 
     (hv || []).forEach((s) => {
       att[s.mahv] = defaultStatus;
@@ -531,7 +529,7 @@ async function loadThongKe() {
                 <div style={{ fontWeight: "600" }}>{s.tenhv}</div>
 
                 <div style={{ display: "flex", gap: 20, marginTop: 10 }}>
-                  {["Có mặt", "Nghỉ phép", "Nghỉ không phép"].map((st) => (
+                  {["Có mặt", "Vắng phép", "Vắng không phép"].map((st) => (
                     <label key={st}>
                       <input
                         type="radio"
@@ -675,7 +673,7 @@ async function loadThongKe() {
                 <div style={{ fontWeight: 600 }}>{s.tenhv}</div>
 
                 <div style={{ display: "flex", gap: 20, marginTop: 10 }}>
-                  {["Có mặt", "Nghỉ phép", "Nghỉ không phép"].map((st) => (
+                  {["Có mặt", "Vắng phép", "Vắng không phép"].map((st) => (
                     <label key={st}>
                       <input
                         type="radio"
@@ -778,7 +776,7 @@ async function loadThongKe() {
                 </div>
 
                 <div style={{ display: "flex", gap: 20, marginTop: 10 }}>
-                  {["Có mặt", "Nghỉ phép", "Nghỉ không phép"].map((st) => (
+                  {["Có mặt", "Vắng phép", "Vắng không phép"].map((st) => (
                     <label key={st}>
                       <input
                         type="radio"
