@@ -113,9 +113,7 @@ useEffect(() => {
     // Set mặc định
     const att = {};
     const note = {};
-    const defaultStatus = isSaturday(selectedDate)
-      ? "Nghỉ không phép"
-      : "Có mặt";
+    const defaultStatus = "Có mặt";
 
     (hv || []).forEach((s) => {
       att[s.mahv] = defaultStatus;
@@ -574,7 +572,7 @@ return (
                   <div key={s.mahv} className="student-item">
                     <div style={{ fontWeight: "700" }}>{s.tenhv}</div>
                     <div className="radio-group">
-                      {["Có mặt", "Nghỉ phép", "Nghỉ không phép"].map((st) => (
+                      {["Có mặt", "Vắng phép", "Vắng không phép"].map((st) => (
                         <label key={st}>
                           <input type="radio" name={`att-${s.mahv}`} checked={attendance[s.mahv] === st} onChange={() => setAttendance((prev) => ({ ...prev, [s.mahv]: st }))} /> {st}
                         </label>
@@ -598,7 +596,7 @@ return (
                 {s.tenhv}
               </div>
               <div style={{ display: "flex", gap: "20px", fontSize: "14px" }}>
-                {["Có mặt","Nghỉ phép","Nghỉ không phép"].map(status => (
+                {["Có mặt","Vắng phép", "Vắng không phép"].map(status => (
                   <label key={status}>
                     <input
                       type="radio"
