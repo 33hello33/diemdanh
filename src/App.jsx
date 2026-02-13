@@ -309,7 +309,7 @@ async function loadThongKe() {
   const { data: hv } = await supabase
     .from("tbl_hv")
     .select("mahv")
-    .eq("trangthai", "Đang học");
+    .eq("trangthai", "Đang Học");
 
   setTkHocVien(hv?.length || 0);
 
