@@ -137,7 +137,7 @@ useEffect(() => {
     // Set mặc định
     const att = {};
     const note = {};
-    const defaultStatus = "Có mặt";
+    const defaultStatus = "Vắng mặt";
 
     (hvTheoNgayHoc || []).forEach((s) => {
       att[s.mahv] = defaultStatus;
