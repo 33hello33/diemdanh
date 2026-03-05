@@ -148,12 +148,15 @@ function App() {
         return;
       }
       
-const { data, error } = await supabase
-  .from("tbl_hv")
-  .select(` *, tbl_lop ( tenlop)`)
-  .ilike("tenhv", `%${searchName}%`)
-  .neq("trangthai", "Đã Nghỉ")
-  .limit(10);
+    const { data, error } = await supabase
+      .from("tbl_hv")
+      .select(`
+        *,
+        tenlop:tbl_lop(tenlop)
+      `)
+      .ilike("tenhv", `%${searchName}%`)
+      .neq("trangthai", "Đã Nghỉ")
+      .limit(10);
 
       setSearchResults(data || []);
       const att = {};
