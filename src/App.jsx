@@ -343,7 +343,7 @@ return (
                <span style={{ color: "#27ae60" }}>
                   {student.tenhv}
                 </span>
-            
+              <br />
               {/* Hết hạn - đỏ */}
               <span style={{ color: "#e74c3c" }}>
                 Hết hạn: {new Date(student.tbl_hd?.[0]?.ngayketthuc).toLocaleDateString("vi-VN")}
