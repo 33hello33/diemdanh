@@ -147,12 +147,16 @@ function App() {
         setSearchResults([]);
         return;
       }
-      const { data } = await supabase
-        .from("tbl_hv")
-        .select("*")
-        .ilike("tenhv", `%${searchName}%`)
-        .neq("trangthai", "Đã Nghỉ")
-        .limit(10);
+      
+    const { data } = await supabase
+      .from("tbl_hv")
+      .select(`
+        *,
+        tenlop:tbl_lop.tenlop
+      `)
+      .ilike("tenhv", `%${searchName}%`)
+      .neq("trangthai", "Đã Nghỉ")
+      .limit(10);
 
       setSearchResults(data || []);
       const att = {};
@@ -367,7 +371,7 @@ return (
               backgroundColor: "#fff", borderLeft: "5px solid #3498db", marginBottom: "12px"
             }}>
               <div style={{ fontWeight: "600", fontSize: "16px", marginBottom: "8px", color: "#34495e" }}>
-                {s.tenhv}
+                {s.tenhv - s.tenlop}
               </div>
               <div style={{ display: "flex", gap: "20px", fontSize: "14px" }}>
                 {["Có mặt","Vắng mặt"].map(status => (
