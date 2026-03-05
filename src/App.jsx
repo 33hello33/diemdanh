@@ -69,13 +69,27 @@ function App() {
   }
 
   async function fetchStudents(maLop) {
-    const { data } = await supabase
-      .from("tbl_hv")
-      .select("*")
-      .eq("malop", maLop)
-      .neq("trangthai", "Đã Nghỉ")
-      .order("tenhv", { ascending: true });
 
+    const { data, error } = await supabase
+  .from("tbl_hv")
+  .select(`
+    *,
+    tbl_lop(tenlop),
+    tbl_hd (
+      ngayketthuc,
+      ngaylap
+    )
+  `)
+  .eq("malop", maLop)
+  .neq("trangthai", "Đã Nghỉ")
+  .order("ngaylap", { 
+    foreignTable: "tbl_hd", 
+    ascending: false 
+  })
+  .limit(1, { foreignTable: "tbl_hd" })
+  .order("tenhv", { ascending: true });
+
+    
     setStudents(data || []);
     setSoLuongHocVien(data?.length || 0);
 
@@ -324,8 +338,16 @@ return (
               padding: "16px", borderRadius: "10px", boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
               backgroundColor: "#fff", borderLeft: "5px solid #3498db", marginBottom: "12px"
             }}>
-              <div style={{ fontWeight: "600", fontSize: "16px", marginBottom: "8px", color: "#34495e" }}>
-                {student.tenhv}
+           <div style={{ fontWeight: "600", fontSize: "16px", marginBottom: "8px" }}>
+               {/* Tên học viên - xanh lá */}
+               <span style={{ color: "#27ae60" }}>
+                  {student.tenhv}
+                </span>
+            
+              {/* Hết hạn - đỏ */}
+              <span style={{ color: "#e74c3c" }}>
+                Hết hạn: {new Date(student.tbl_hd?.[0]?.ngayketthuc).toLocaleDateString("vi-VN")}
+              </span>
               </div>
               <div style={{ display: "flex", gap: "20px", fontSize: "14px" }}>
                 {["Có mặt","Vắng mặt"].map(status => (
@@ -397,7 +419,7 @@ return (
             
               {/* Hết hạn - đỏ */}
               <span style={{ color: "#e74c3c" }}>
-                Hết hạn: {s.tbl_hd?.[0]?.ngayketthuc}
+                Hết hạn: {new Date(s.tbl_hd?.[0]?.ngayketthuc).toLocaleDateString("vi-VN")}
               </span>
             </div>
               
