@@ -379,11 +379,28 @@ return (
               padding: "16px", borderRadius: "10px", boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
               backgroundColor: "#fff", borderLeft: "5px solid #3498db", marginBottom: "12px"
             }}>
-              <div style={{ fontWeight: "600", fontSize: "16px", marginBottom: "8px", color: "#34495e" }}>
-               {s.tenhv} - {s.tbl_lop?.tenlop}
-                <br />
+              
+            <div style={{ fontWeight: "600", fontSize: "16px", marginBottom: "8px" }}>
+              {/* Tên học viên - xanh lá */}
+              <span style={{ color: "#27ae60" }}>
+                {s.tenhv}
+              </span>
+            
+              {" - "}
+            
+              {/* Tên lớp - đen */}
+              <span style={{ color: "#000000" }}>
+                {s.tbl_lop?.tenlop}
+              </span>
+            
+              <br />
+            
+              {/* Hết hạn - đỏ */}
+              <span style={{ color: "#e74c3c" }}>
                 Hết hạn: {s.tbl_hd?.[0]?.ngayketthuc}
-              </div>
+              </span>
+            </div>
+              
               <div style={{ display: "flex", gap: "20px", fontSize: "14px" }}>
                 {["Có mặt","Vắng mặt"].map(status => (
                   <label key={status}>
