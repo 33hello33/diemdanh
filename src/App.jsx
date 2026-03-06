@@ -270,7 +270,7 @@ const { data, error } = await supabase
       const att = {};
       const note = {};
       (data || []).forEach((s) => {
-        att[s.mahv] = "Có mặt";
+        att[s.mahv] = "Vắng mặt";
         note[s.mahv] = "";
       });
       setSearchAttendance(att);
@@ -565,7 +565,7 @@ async function loadThongKe() {
               <br />
               {/* Hết hạn - đỏ */}
               <span style={{ color: "#e74c3c" }}>
-                Hết hạn: {new Date(s.tbl_hd?.[0]?.ngayketthuc).toLocaleDateString("vi-VN")}
+                Học Phí hết hạn: {new Date(s.tbl_hd?.[0]?.ngayketthuc).toLocaleDateString("vi-VN")}
               </span>
               </div>
 
@@ -728,7 +728,7 @@ async function loadThongKe() {
             
               {/* Hết hạn - đỏ */}
               <span style={{ color: "#e74c3c" }}>
-                Hết hạn: {new Date(s.tbl_hd?.[0]?.ngayketthuc).toLocaleDateString("vi-VN")}
+                Học Phí hết hạn: {new Date(s.tbl_hd?.[0]?.ngayketthuc).toLocaleDateString("vi-VN")}
               </span>
             </div>
 
