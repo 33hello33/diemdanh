@@ -108,7 +108,7 @@ useEffect(() => {
 
   const thuHienTai = mapThu[new Date(selectedDate).getDay()];
     
-    const { data, error } = await supabase
+    const { data: hv, error } = await supabase
   .from("tbl_hv")
   .select(`
     *,
@@ -560,12 +560,12 @@ async function loadThongKe() {
                            <div style={{ fontWeight: "600", fontSize: "16px", marginBottom: "8px" }}>
                {/* Tên học viên - xanh lá */}
                <span style={{ color: "#27ae60" }}>
-                  {student.tenhv}
+                  {s.tenhv}
                 </span>
               <br />
               {/* Hết hạn - đỏ */}
               <span style={{ color: "#e74c3c" }}>
-                Hết hạn: {new Date(student.tbl_hd?.[0]?.ngayketthuc).toLocaleDateString("vi-VN")}
+                Hết hạn: {new Date(s.tbl_hd?.[0]?.ngayketthuc).toLocaleDateString("vi-VN")}
               </span>
               </div>
 
