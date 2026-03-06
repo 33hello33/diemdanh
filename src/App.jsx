@@ -108,17 +108,24 @@ useEffect(() => {
 
   const thuHienTai = mapThu[new Date(selectedDate).getDay()];
     
-    const { data: hv, error } = await supabase
-      .from("tbl_hv")
-      .select("*")
-      .eq("malop", maLop)
-      .neq("trangthai", "Đã Nghỉ")
-      .order("tenhv", { ascending: true });
-    
-  if (error) {
-    console.error(error);
-    return;
-  }
+    const { data, error } = await supabase
+  .from("tbl_hv")
+  .select(`
+    *,
+    tbl_lop(tenlop),
+    tbl_hd (
+      ngayketthuc,
+      ngaylap
+    )
+  `)
+  .eq("malop", maLop)
+  .neq("trangthai", "Đã Nghỉ")
+  .order("ngaylap", { 
+    foreignTable: "tbl_hd", 
+    ascending: false 
+  })
+  .limit(1, { foreignTable: "tbl_hd" })
+  .order("tenhv", { ascending: true });
     
     const hvTheoNgayHoc = hv.filter((item) => {
       if (!item.lichhoc) return false;
@@ -239,12 +246,24 @@ useEffect(() => {
         return;
       }
 
-      const { data } = await supabase
-        .from("tbl_hv")
-        .select("*")
-        .ilike("tenhv", `%${searchName}%`)
-        .neq("trangthai", "Đã Nghỉ")
-        .limit(10);
+const { data, error } = await supabase
+  .from("tbl_hv")
+  .select(`
+    *,
+    tbl_lop(tenlop),
+    tbl_hd (
+      ngayketthuc,
+      ngaylap
+    )
+  `)
+  .ilike("tenhv", `%${searchName}%`)
+  .neq("trangthai", "Đã Nghỉ")
+  .order("ngaylap", { 
+    foreignTable: "tbl_hd", 
+    ascending: false 
+  })
+  .limit(1, { foreignTable: "tbl_hd" })
+  .limit(10);
 
       setSearchResults(data || []);
 
@@ -538,7 +557,17 @@ async function loadThongKe() {
                   boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
                 }}
               >
-                <div style={{ fontWeight: "600" }}>{s.tenhv}</div>
+                           <div style={{ fontWeight: "600", fontSize: "16px", marginBottom: "8px" }}>
+               {/* Tên học viên - xanh lá */}
+               <span style={{ color: "#27ae60" }}>
+                  {student.tenhv}
+                </span>
+              <br />
+              {/* Hết hạn - đỏ */}
+              <span style={{ color: "#e74c3c" }}>
+                Hết hạn: {new Date(student.tbl_hd?.[0]?.ngayketthuc).toLocaleDateString("vi-VN")}
+              </span>
+              </div>
 
                 <div style={{ display: "flex", gap: 20, marginTop: 10 }}>
                   {["Có mặt", "Vắng mặt"].map((st) => (
@@ -682,7 +711,26 @@ async function loadThongKe() {
                   borderLeft: "5px solid #3498db",
                 }}
               >
-                <div style={{ fontWeight: 600 }}>{s.tenhv}</div>
+                            <div style={{ fontWeight: "600", fontSize: "16px", marginBottom: "8px" }}>
+              {/* Tên học viên - xanh lá */}
+              <span style={{ color: "#27ae60" }}>
+                {s.tenhv}
+              </span>
+            
+              {" - "}
+            
+              {/* Tên lớp - đen */}
+              <span style={{ color: "#000000" }}>
+                {s.tbl_lop?.tenlop}
+              </span>
+            
+              <br />
+            
+              {/* Hết hạn - đỏ */}
+              <span style={{ color: "#e74c3c" }}>
+                Hết hạn: {new Date(s.tbl_hd?.[0]?.ngayketthuc).toLocaleDateString("vi-VN")}
+              </span>
+            </div>
 
                 <div style={{ display: "flex", gap: 20, marginTop: 10 }}>
                   {["Có mặt", "Vắng mặt"].map((st) => (
