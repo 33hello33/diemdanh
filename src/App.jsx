@@ -99,7 +99,7 @@ useEffect(() => {
     const { data: hv } = await supabase
       .from("tbl_hv")
       .select("*")
-      .eq("malop", maLop)
+      .or(`malop.eq.${maLop},malop.like.${maLop},malop.like.${maLop},%,malop.like.%,${maLop},%,malop.like.%,${maLop}`)
       .neq("trangthai", "Đã Nghỉ")
       .order("tenhv", { ascending: true });
 
