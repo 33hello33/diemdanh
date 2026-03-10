@@ -52,7 +52,7 @@ function App() {
 
   // Kiểm tra thứ 7
   const isSaturday = (dateStr) => new Date(dateStr).getDay() === 6;
-
+  
   // LOGIN
   async function handleLogin() {
     const { data, error } = await supabase
@@ -91,17 +91,31 @@ useEffect(() => {
     const { data } = await q;
     setLopList(data || []);
   }
+  
+const getThuHomNay = () => {
+  const days = ["cn", "t2", "t3", "t4", "t5", "t6", "t7"];
+  return days[new Date().getDay()];
+};
 
+const thu = getThuHomNay();
+  
   // LẤY DANH SÁCH HỌC VIÊN + ĐIỂM DANH NGÀY ĐÓ
   async function fetchStudents(maLop) {
     if (!maLop) return;
 
-    const { data: hv } = await supabase
-      .from("tbl_hv")
-      .select("*")
-      .ilike("malop", `%${maLop}%`)
-      .neq("trangthai", "Đã Nghỉ")
-      .order("tenhv", { ascending: true });
+const { data: hv, error } = await supabase
+  .from("tbl_hv")
+  .select(`
+    *,
+    tbl_dangkylichhoc!inner (
+      malop,
+      lichhoc
+    )
+  `)
+  .eq("tbl_dangkylichhoc.malop", malop)
+  .ilike("tbl_dangkylichhoc.lichhoc", `%${thu}%`)
+  .neq("trangthai", "Đã Nghỉ")
+  .order("tenhv", { ascending: true });
 
     setStudents(hv || []);
     setSoLuongHocVien(hv?.length || 0);
