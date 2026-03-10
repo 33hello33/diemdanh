@@ -112,8 +112,7 @@ const { data: hv, error } = await supabase
   `)
   .eq("malop", maLop)
   .ilike("lichhoc", `%${thu}%`)
-  .neq("tbl_hv.trangthai", "Đã Nghỉ")
-  .order("tbl_hv.tenhv", { ascending: true });
+  .neq("tbl_hv.trangthai", "Đã Nghỉ");
 
     setStudents(hv || []);
     setSoLuongHocVien(hv?.length || 0);
