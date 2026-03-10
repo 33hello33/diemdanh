@@ -112,7 +112,7 @@ const { data: hv, error } = await supabase
       lichhoc
     )
   `)
-  .eq("tbl_dangkylichhoc.malop", malop)
+  .eq("tbl_dangkylichhoc.malop", maLop)
   .ilike("tbl_dangkylichhoc.lichhoc", `%${thu}%`)
   .neq("trangthai", "Đã Nghỉ")
   .order("tenhv", { ascending: true });
