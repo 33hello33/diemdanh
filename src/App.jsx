@@ -103,19 +103,17 @@ const thu = getThuHomNay();
   async function fetchStudents(maLop) {
     if (!maLop) return;
 
-const { data: hv, error } = await supabase
-  .from("tbl_hv")
+const { data, error } = await supabase
+  .from("tbl_dangkylichhoc")
   .select(`
-    *,
-    tbl_dangkylichhoc!inner (
-      malop,
-      lichhoc
-    )
+    malop,
+    lichhoc,
+    tbl_hv!inner(*)
   `)
-  .eq("tbl_dangkylichhoc.malop", maLop)
-  .ilike("tbl_dangkylichhoc.lichhoc", `%${thu}%`)
-  .neq("trangthai", "Đã Nghỉ")
-  .order("tenhv", { ascending: true });
+  .eq("malop", malop)
+  .ilike("lichhoc", `%${thu}%`)
+  .neq("tbl_hv.trangthai", "Đã Nghỉ")
+  .order("tbl_hv.tenhv", { ascending: true });
 
     setStudents(hv || []);
     setSoLuongHocVien(hv?.length || 0);
