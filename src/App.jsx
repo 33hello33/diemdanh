@@ -103,14 +103,14 @@ const thu = getThuHomNay();
   async function fetchStudents(maLop) {
     if (!maLop) return;
 
-const { data, error } = await supabase
+const { data: hv, error } = await supabase
   .from("tbl_dangkylichhoc")
   .select(`
     malop,
     lichhoc,
     tbl_hv!inner(*)
   `)
-  .eq("malop", malop)
+  .eq("malop", maLop)
   .ilike("lichhoc", `%${thu}%`)
   .neq("tbl_hv.trangthai", "Đã Nghỉ")
   .order("tbl_hv.tenhv", { ascending: true });
