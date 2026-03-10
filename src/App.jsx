@@ -103,7 +103,7 @@ const thu = getThuHomNay();
   async function fetchStudents(maLop) {
     if (!maLop) return;
 
-const { data: hv, error } = await supabase
+const { data, error } = await supabase
   .from("tbl_dangkylichhoc")
   .select(`
     malop,
@@ -113,7 +113,12 @@ const { data: hv, error } = await supabase
   .eq("malop", maLop)
   .ilike("lichhoc", `%${thu}%`)
   .neq("tbl_hv.trangthai", "Đã Nghỉ");
-
+    
+const hv = (data || []).map(({ tbl_hv, ...rest }) => ({
+  ...rest,
+  ...tbl_hv
+}));
+    
     setStudents(hv || []);
     setSoLuongHocVien(hv?.length || 0);
 
