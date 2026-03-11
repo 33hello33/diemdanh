@@ -182,7 +182,7 @@ const hv = (data || []).map(({ tbl_hv, ...rest }) => ({
 
     const { error } = await supabase
       .from("tbl_diemdanh")
-      .upsert(payload, { onConflict: "mahv,ngay" });
+      .upsert(payload, { onConflict: "mahv,malop,ngay" });
 
     const currentLop = lopList.find(x => x.malop === selectedLop);
     
@@ -238,7 +238,7 @@ const hv = (data || []).map(({ tbl_hv, ...rest }) => ({
 
     const { error } = await supabase
       .from("tbl_diemdanh")
-      .upsert(payload, { onConflict: "mahv,ngay" });
+      .upsert(payload, { onConflict: "mahv,malop, ngay" });
 
     alert(error ? "❌ Lỗi lưu!" : "✅ Lưu thành công!");
   }
@@ -281,7 +281,7 @@ const hv = (data || []).map(({ tbl_hv, ...rest }) => ({
 
     const { error } = await supabase
       .from("tbl_diemdanh")
-      .upsert(payload, { onConflict: "mahv,ngay" });
+      .upsert(payload, { onConflict: "mahv,malop, ngay" });
 
     alert(error ? "❌ Lỗi lưu!" : "✅ Lưu thành công!");
   }
