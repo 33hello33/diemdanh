@@ -33,6 +33,7 @@ const [selectedMonhoc, setSelectedMonhoc] = useState("");
   const [notes, setNotes] = useState({});
 
   // TÌM THEO TÊN
+  const [searchStudentLop, setSearchStudentLop] = useState({});
   const [searchLop, setSearchLop] = useState("");
   const [searchName, setSearchName] = useState("");
   const [searchResults, setSearchResults] = useState([]);
@@ -240,7 +241,23 @@ useEffect(() => {
         .limit(10);
 
       setSearchResults(data || []);
+      
+// load lớp của từng học viên
+const lopMap = {};
 
+for (const hv of data || []) {
+  const { data: dk } = await supabase
+    .from("tbl_dangkylichhoc")
+    .select(`
+      malop,
+      tbl_lop(tenlop)
+    `)
+    .eq("mahv", hv.mahv);
+
+  lopMap[hv.mahv] = dk || [];
+}
+setSearchStudentLop(lopMap);
+      
       const att = {};
       const note = {};
       (data || []).forEach((s) => {
@@ -687,21 +704,27 @@ async function loadThongKe() {
               }}
             />
             
-  <select
-  value={searchLop}
-  onChange={(e) => setSearchLop(e.target.value)}
+<select
+  value={searchLop[s.mahv] || ""}
+  onChange={(e) =>
+    setSearchLop((prev) => ({
+      ...prev,
+      [s.mahv]: e.target.value,
+    }))
+  }
   style={{
     width: "100%",
-    padding: 10,
-    marginBottom: 12,
+    padding: 6,
+    marginTop: 6,
     borderRadius: 6,
     border: "1px solid #ccc",
   }}
 >
   <option value="">-- Chọn lớp --</option>
-  {lopList.map((lop) => (
-    <option key={lop.malop} value={lop.malop}>
-      {lop.tenlop}
+
+  {(searchStudentLop[s.mahv] || []).map((l) => (
+    <option key={l.malop} value={l.malop}>
+      {l.tbl_lop?.tenlop}
     </option>
   ))}
 </select>
