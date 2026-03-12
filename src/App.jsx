@@ -33,6 +33,7 @@ const [selectedMonhoc, setSelectedMonhoc] = useState("");
   const [notes, setNotes] = useState({});
 
   // TÌM THEO TÊN
+  const [searchLop, setSearchLop] = useState("");
   const [searchName, setSearchName] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [searchAttendance, setSearchAttendance] = useState({});
@@ -254,8 +255,13 @@ useEffect(() => {
   }, [searchName]);
 
   async function handleSearchSubmit() {
+      if (!searchLop) {
+    alert("⚠️ Vui lòng chọn lớp!");
+    return;
+  }
     const payload = searchResults.map((s) => ({
       mahv: s.mahv,
+       malop: searchLop,
       ngay: selectedDate,
       trangthai: searchAttendance[s.mahv],
       ghichu: searchNotes[s.mahv] || "",
@@ -666,7 +672,7 @@ async function loadThongKe() {
           {/* -------------------------------------------------- */}
           <div style={boxStyle}>
             <h2 style={{ color: "#2c3e50" }}>🔎 Điểm danh theo tên</h2>
-
+            
             <input
               type="text"
               placeholder="Nhập tên học viên..."
@@ -680,7 +686,26 @@ async function loadThongKe() {
                 border: "1px solid #ccc",
               }}
             />
-
+            
+  <select
+  value={searchLop}
+  onChange={(e) => setSearchLop(e.target.value)}
+  style={{
+    width: "100%",
+    padding: 10,
+    marginBottom: 12,
+    borderRadius: 6,
+    border: "1px solid #ccc",
+  }}
+>
+  <option value="">-- Chọn lớp --</option>
+  {lopList.map((lop) => (
+    <option key={lop.malop} value={lop.malop}>
+      {lop.tenlop}
+    </option>
+  ))}
+</select>
+            
             {searchResults.map((s) => (
               <div
                 key={s.mahv}
@@ -751,97 +776,6 @@ async function loadThongKe() {
             )}
           </div>
 
-          {/* -------------------------------------------------- */}
-          {/*        PHẦN 3: TÌM THEO MÃ HV                    */}
-          {/* -------------------------------------------------- */}
-          <div style={boxStyle}>
-            <h2 style={{ color: "#2c3e50" }}>💳 Điểm danh theo mã HV</h2>
-
-            <div style={{ display: "flex", gap: 10, marginBottom: 12 }}>
-              <input
-                type="text"
-                placeholder="Nhập mã học viên..."
-                value={searchMahv}
-                onChange={(e) => setSearchMahv(e.target.value)}
-                style={{
-                  flex: 1,
-                  padding: 10,
-                  borderRadius: 6,
-                  border: "1px solid #ccc",
-                }}
-              />
-              <button
-                onClick={() => fetchStudentByMahv(searchMahv)}
-                style={{
-                  padding: "10px 16px",
-                  background: "#9b59b6",
-                  color: "#fff",
-                  borderRadius: 6,
-                  fontWeight: 600,
-                }}
-              >
-                Tìm
-              </button>
-            </div>
-
-            {mahvResult && (
-              <div
-                style={{
-                  background: "#fff",
-                  padding: 16,
-                  borderRadius: 10,
-                  borderLeft: "5px solid #3498db",
-                }}
-              >
-                <div style={{ fontWeight: 600 }}>
-                  {mahvResult.tenhv} ({mahvResult.mahv})
-                </div>
-
-                <div style={{ display: "flex", gap: 20, marginTop: 10 }}>
-                  {["Có mặt", "Nghỉ phép", "Nghỉ không phép"].map((st) => (
-                    <label key={st}>
-                      <input
-                        type="radio"
-                        name="mahv-att"
-                        checked={mahvAttendance === st}
-                        onChange={() => setMahvAttendance(st)}
-                      />{" "}
-                      {st}
-                    </label>
-                  ))}
-                </div>
-
-                <input
-                  type="text"
-                  placeholder="Nhận xét..."
-                  value={mahvNote}
-                  onChange={(e) => setMahvNote(e.target.value)}
-                  style={{
-                    width: "100%",
-                    marginTop: 6,
-                    padding: 6,
-                    borderRadius: 6,
-                    border: "1px solid #ccc",
-                  }}
-                />
-
-                <button
-                  onClick={handleMahvSubmit}
-                  style={{
-                    width: "100%",
-                    marginTop: 10,
-                    padding: 12,
-                    background: "#2ecc71",
-                    color: "#fff",
-                    borderRadius: 6,
-                    fontWeight: 600,
-                  }}
-                >
-                  ✅ Lưu điểm danh mã HV
-                </button>
-              </div>
-            )}
-          </div>
         </>
       )}
     </div>
