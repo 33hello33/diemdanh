@@ -704,31 +704,6 @@ async function loadThongKe() {
               }}
             />
             
-<select
-  value={searchLop[s.mahv] || ""}
-  onChange={(e) =>
-    setSearchLop((prev) => ({
-      ...prev,
-      [s.mahv]: e.target.value,
-    }))
-  }
-  style={{
-    width: "100%",
-    padding: 6,
-    marginTop: 6,
-    borderRadius: 6,
-    border: "1px solid #ccc",
-  }}
->
-  <option value="">-- Chọn lớp --</option>
-
-  {(searchStudentLop[s.mahv] || []).map((l) => (
-    <option key={l.malop} value={l.malop}>
-      {l.tbl_lop?.tenlop}
-    </option>
-  ))}
-</select>
-            
             {searchResults.map((s) => (
               <div
                 key={s.mahv}
@@ -741,7 +716,33 @@ async function loadThongKe() {
                 }}
               >
                 <div style={{ fontWeight: 600 }}>{s.tenhv}</div>
+                
+{/* CHỌN LỚP CỦA HỌC VIÊN */}
+    <select
+      value={searchLop[s.mahv] || ""}
+      onChange={(e) =>
+        setSearchLop((prev) => ({
+          ...prev,
+          [s.mahv]: e.target.value,
+        }))
+      }
+      style={{
+        width: "100%",
+        padding: 6,
+        marginTop: 6,
+        borderRadius: 6,
+        border: "1px solid #ccc",
+      }}
+    >
+      <option value="">-- Chọn lớp --</option>
 
+      {(searchStudentLop[s.mahv] || []).map((l) => (
+        <option key={l.malop} value={l.malop}>
+          {l.tbl_lop?.tenlop}
+        </option>
+      ))}
+    </select>
+                
                 <div style={{ display: "flex", gap: 20, marginTop: 10 }}>
                   {["Có mặt", "Nghỉ phép", "Nghỉ không phép"].map((st) => (
                     <label key={st}>
