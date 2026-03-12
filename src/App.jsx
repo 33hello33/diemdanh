@@ -12,7 +12,11 @@ function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [manv, setManv] = useState(null);
   const [role, setRole] = useState("");
-
+  
+// MÔN HỌC
+const [monhocList, setMonhocList] = useState([]);
+const [selectedMonhoc, setSelectedMonhoc] = useState("");
+  
   // LỚP
   const [lopList, setLopList] = useState([]);
   const [selectedLop, setSelectedLop] = useState("");
@@ -70,6 +74,7 @@ function App() {
     setManv(data.manv);
     setRole(data.role);
     setLoggedIn(true);
+    fetchMonHoc();
     fetchLopList(data.manv, data.role);
   }
   
@@ -78,16 +83,29 @@ useEffect(() => {
     loadThongKe();
   }
 }, [loggedIn, role]);
+
+  // Load danh sách môn học
+  async function fetchMonHoc() {
+  const { data } = await supabase
+    .from("tbl_monhoc")
+    .select("id, monhoc")
+    .order("monhoc");
+
+  setMonhocList(data || []);
+}
   
   // LẤY DANH SÁCH LỚP
-  async function fetchLopList(manv, role) {
+  async function fetchLopList(manv, role, monhoc = null) {
     let q = supabase
       .from("tbl_lop")
-      .select("malop, tenlop")
+      .select("malop, tenlop, monhoc")
       .neq("daxoa", "Đã Xóa");
 
     if (role === "Giáo viên") q = q.eq("manv", manv);
 
+    if (monhoc) {
+    q = q.eq("monhoc", monhoc.toString()); 
+    }
     const { data } = await q;
     setLopList(data || []);
   }
@@ -189,6 +207,13 @@ const hv = (data || []).map(({ tbl_hv, ...rest }) => ({
     alert(error ? "❌ Lỗi lưu!" : "✅ Lưu thành công!");
   }
 
+  // Khi chọn môn học → reload lớp
+useEffect(() => {
+  if (loggedIn) {
+    fetchLopList(manv, role, selectedMonhoc);
+  }
+}, [selectedMonhoc]);
+  
   // --------------------------------------------------------------------
   // AUTO REFRESH KHI ĐỔI LỚP HOẶC ĐỔI NGÀY
   // --------------------------------------------------------------------
@@ -471,7 +496,26 @@ async function loadThongKe() {
                 />
               </div>
             )}
-
+            
+            <select
+              value={selectedMonhoc}
+              onChange={(e) => setSelectedMonhoc(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "10px",
+                marginBottom: "12px",
+                borderRadius: "6px",
+                border: "1px solid #ccc",
+              }}
+            >
+              <option value="">-- Chọn môn học --</option>
+              {monhocList.map((m) => (
+                <option key={m.id} value={m.id}>
+                  {m.monhoc}
+                </option>
+              ))}
+            </select>
+            
             <select
               value={selectedLop}
               onChange={(e) => setSelectedLop(e.target.value)}
