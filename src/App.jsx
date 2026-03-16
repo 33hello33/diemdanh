@@ -16,10 +16,6 @@ function App() {
 // MÔN HỌC
 const [monhocList, setMonhocList] = useState([]);
 const [selectedMonhoc, setSelectedMonhoc] = useState("");
-  
-  // LỚP
-  const [lopList, setLopList] = useState([]);
-  const [selectedLop, setSelectedLop] = useState("");
 
   // HỌC VIÊN
   const [students, setStudents] = useState([]);
@@ -160,11 +156,11 @@ const thu = getThuHomNay();
     setNotes(note);
 
     // Load dữ liệu điểm danh ngày đã chọn
-    await loadAttendanceByDate(maLop, selectedDate);
+    await loadAttendanceByDate(selectedDate);
   }
 
   // LOAD ĐIỂM DANH NGÀY (date)
-  async function loadAttendanceByDate(maLop, dateStr) {
+  async function loadAttendanceByDate(dateStr) {
 
     const { data } = await supabase
       .from("tbl_diemdanh")
@@ -201,7 +197,7 @@ const thu = getThuHomNay();
       ngay: selectedDate,
       trangthai: attendance[s.mahv],
       ghichu: notes[s.mahv] || "",
-      malop: selectedLop,
+      malop: s.malop,
     }));
 
     const { error } = await supabase
@@ -216,9 +212,9 @@ const thu = getThuHomNay();
   // Khi chọn môn học → reload lớp
 useEffect(() => {
   if (loggedIn) {
-    fetchLopList(manv, role, selectedMonhoc);
+   fetchStudents();
   }
-}, [selectedMonhoc]);
+}, [selectedMonhoc,selectedDate]);
   
   // --------------------------------------------------------------------
   // AUTO REFRESH KHI ĐỔI LỚP HOẶC ĐỔI NGÀY
@@ -542,25 +538,7 @@ async function loadThongKe() {
                 </option>
               ))}
             </select>
-            
-            <select
-              value={selectedLop}
-              onChange={(e) => setSelectedLop(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "10px",
-                marginBottom: "12px",
-                borderRadius: "6px",
-                border: "1px solid #ccc",
-              }}
-            >
-              <option value="">-- Chọn lớp --</option>
-              {lopList.map((lop) => (
-                <option key={lop.malop} value={lop.malop}>
-                  {lop.tenlop}
-                </option>
-              ))}
-            </select>
+
             <p>Tổng số học viên: {soLuongHocVien}</p>
 
             {students.map((s) => (
