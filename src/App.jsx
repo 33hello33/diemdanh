@@ -164,7 +164,7 @@ function App() {
   };
 
   const { error: errorChamCong } = await supabase
-    .from("tbl_chamcongnv")
+    .from("tbl_chamconggv")
     .upsert(chamCongPayload, { onConflict: "ngay,malop,manv" });
 
   if (errorChamCong) {
