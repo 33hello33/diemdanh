@@ -139,14 +139,6 @@ function App() {
     });
   }
   
-  function mergeDateWithCurrentTime(selectedDate){
-  const now = new Date();
-  const hh = String(now.getHours()).padStart(2,'0');
-  const mm = String(now.getMinutes()).padStart(2,'0');
-  const ss = String(now.getSeconds()).padStart(2,'0');
-  return `${selectedDate} ${hh}:${mm}:${ss}`;
-}
-  
   async function handleSubmit() {
     const diemDanhNgay = selectedDate;
     const payload = students.map((s) => ({
@@ -167,9 +159,10 @@ function App() {
 
   // 2. upsert bảng chấm công nhân viên
   const chamCongPayload = {
-    ngay: mergeDateWithCurrentTime(diemDanhNgay),
+    ngay: selectedDate,
     malop: selectedLop,   // id lớp
-    manv: manv     // id nhân viên
+    manv: manv,     // id nhân viên
+    thoigian: new Date().toISOString()
   };
 
   const { error: errorChamCong } = await supabase
