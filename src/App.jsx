@@ -121,23 +121,27 @@ const thu = getThuHomNay();
   
   // LẤY DANH SÁCH HỌC VIÊN + ĐIỂM DANH NGÀY ĐÓ
   async function fetchStudents(maLop) {
-    if (!maLop) return;
-
-const { data, error } = await supabase
-  .from("tbl_dangkylichhoc")
-  .select(`
-    malop,
-    lichhoc,
-    tbl_hv!inner(*)
-  `)
-  .eq("malop", maLop)
-  .ilike("lichhoc", `%${thu}%`)
-  .neq("tbl_hv.trangthai", "Đã Nghỉ");
     
-const hv = (data || []).map(({ tbl_hv, ...rest }) => ({
-  ...rest,
-  ...tbl_hv
-}));
+  if (!selectedMonhoc) return;
+
+  const thu = getThuHomNay();
+    
+ const { data, error } = await supabase
+    .from("tbl_dangkylichhoc")
+    .select(`
+      malop,
+      lichhoc,
+      tbl_hv!inner(*),
+      tbl_lop!inner(monhoc)
+    `)
+    .eq("tbl_lop.monhoc", selectedMonhoc)
+    .ilike("lichhoc", `%${thu}%`)
+    .neq("tbl_hv.trangthai", "Đã Nghỉ");
+    
+ const hv = (data || []).map(({ tbl_hv, malop }) => ({
+    ...tbl_hv,
+    malop
+  }));
     
     setStudents(hv || []);
     setSoLuongHocVien(hv?.length || 0);
