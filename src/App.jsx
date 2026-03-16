@@ -138,6 +138,14 @@ function App() {
       return updated;
     });
   }
+  
+  function addHours(dateString, hours){
+  const d = new Date(dateString);
+  d.setHours(d.getHours() + hours);
+
+  return d.toISOString().slice(0,19).replace("T"," ");
+}
+  
   async function handleSubmit() {
     const diemDanhNgay = selectedDate;
     const payload = students.map((s) => ({
@@ -158,7 +166,7 @@ function App() {
 
   // 2. upsert bảng chấm công nhân viên
   const chamCongPayload = {
-    ngay: diemDanhNgay,
+    ngay: addHours(diemDanhNgay, 7),
     malop: selectedLop,   // id lớp
     manv: manv     // id nhân viên
   };
