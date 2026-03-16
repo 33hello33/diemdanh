@@ -139,11 +139,12 @@ function App() {
     });
   }
   
-  function addHours(dateString, hours){
-  const d = new Date(dateString);
-  d.setHours(d.getHours() + hours);
-
-  return d.toISOString().slice(0,19).replace("T"," ");
+  function mergeDateWithCurrentTime(selectedDate){
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2,'0');
+  const mm = String(now.getMinutes()).padStart(2,'0');
+  const ss = String(now.getSeconds()).padStart(2,'0');
+  return `${selectedDate} ${hh}:${mm}:${ss}`;
 }
   
   async function handleSubmit() {
@@ -166,7 +167,7 @@ function App() {
 
   // 2. upsert bảng chấm công nhân viên
   const chamCongPayload = {
-    ngay: addHours(diemDanhNgay, 7),
+    ngay: mergeDateWithCurrentTime(diemDanhNgay),
     malop: selectedLop,   // id lớp
     manv: manv     // id nhân viên
   };
