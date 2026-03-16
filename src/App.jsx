@@ -105,7 +105,7 @@ useEffect(() => {
     q = q.eq("monhoc", monhoc.toString()); 
     }
     const { data } = await q;
-    setLopList(data || []);
+    //setLopList(data || []);
   }
   
 const getThuHomNay = () => {
@@ -203,9 +203,7 @@ const thu = getThuHomNay();
     const { error } = await supabase
       .from("tbl_diemdanh")
       .upsert(payload, { onConflict: "mahv,malop,ngay" });
-
-    const currentLop = lopList.find(x => x.malop === selectedLop);
-    
+  
     alert(error ? "❌ Lỗi lưu!" : "✅ Lưu thành công!");
   }
 
@@ -216,13 +214,6 @@ useEffect(() => {
   }
 }, [selectedMonhoc,selectedDate]);
   
-  // --------------------------------------------------------------------
-  // AUTO REFRESH KHI ĐỔI LỚP HOẶC ĐỔI NGÀY
-  // --------------------------------------------------------------------
-  useEffect(() => {
-    if (selectedLop) fetchStudents(selectedLop);
-  }, [selectedLop, selectedDate]);
-
   // --------------------------------------------------------------------
   // TÌM THEO TÊN
   // --------------------------------------------------------------------
@@ -608,12 +599,9 @@ async function loadThongKe() {
                       }
                       const now = new Date().toISOString();
                     
-                   //lấy tên lớp đúng
-                    const currentLop = lopList.find(x => x.malop === selectedLop);
-                    
                     const { error } = await supabase.from("tbl_alert").insert([
                       {
-                        tenlop: currentLop?.tenlop || "",
+                        //tenlop: currentLop?.tenlop || "",
                         tennv: username,         // tên giáo viên
                         tenhv: s.tenhv,      // tên học viên
                         ghichu: note,            // ghi chú
