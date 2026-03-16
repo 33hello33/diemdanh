@@ -114,7 +114,7 @@ useEffect(() => {
   
 const getThuHomNay = () => {
   const days = ["cn", "t2", "t3", "t4", "t5", "t6", "t7"];
-  return days[new selectedDate.getDay()];
+  return days[new Date(selectedDate).getDay()];
 };
 
 const thu = getThuHomNay();
