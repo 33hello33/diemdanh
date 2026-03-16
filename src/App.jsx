@@ -151,7 +151,28 @@ function App() {
       .from("tbl_diemdanh")
       .upsert(payload, { onConflict: "mahv,ngay" });
 
-    alert(error ? "❌ Lỗi lưu!" : "✅ Lưu thành công!");
+ if (error) {
+    alert("❌ Lỗi lưu điểm danh!");
+    return;
+  }
+
+  // 2. upsert bảng chấm công nhân viên
+  const chamCongPayload = {
+    ngay: diemDanhNgay,
+    malop: selectedLop,   // id lớp
+    manv: manv     // id nhân viên
+  };
+
+  const { error: errorChamCong } = await supabase
+    .from("tbl_chamcongnv")
+    .upsert(chamCongPayload, { onConflict: "ngay,malop,manv" });
+
+  if (errorChamCong) {
+    alert("⚠️ Lưu điểm danh ok nhưng lỗi chấm công!");
+    return;
+  }
+
+  alert("✅ Lưu thành công!");
   }
 
   // ------------------------
