@@ -170,7 +170,7 @@ function App() {
     .upsert(chamCongPayload, { onConflict: "ngay,malop,manv" });
 
   if (errorChamCong) {
-    alert("⚠️ Lưu điểm danh ok nhưng lỗi chấm công!");
+    alert("⚠️ Lưu điểm danh ok, lỗi insert");
     return;
   }
 
