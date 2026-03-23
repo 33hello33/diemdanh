@@ -31,8 +31,6 @@ function App() {
   const [mahvAttendance, setMahvAttendance] = useState("");
   const [mahvNote, setMahvNote] = useState("");
   
-  const isManager = role === "Quản lý" || role === "Giám đốc";
-  
   // ------------------------
   // PHẦN 1: LOGIN + CHỌN LỚP
   // ------------------------
@@ -377,7 +375,7 @@ return (
               </span>
               </div>
               <div style={{ display: "flex", gap: "20px", fontSize: "14px" }}>
-                {(isManager ? ["Có mặt","Vắng mặt"] : ["Có mặt"]).map(status => (
+                   {["Có mặt","Vắng mặt"].map(status => (
                   <label key={status} style={{ display: "flex", alignItems: "center", gap: 6 }}>
                     <input
                       type="radio"
@@ -451,7 +449,7 @@ return (
             </div>
               
               <div style={{ display: "flex", gap: "20px", fontSize: "14px" }}>
-                {(isManager ? ["Có mặt","Vắng mặt"] : ["Có mặt"]).map(status => (
+                  {["Có mặt","Vắng mặt"].map(status => (
                   <label key={status}>
                     <input
                       type="radio"
@@ -509,7 +507,7 @@ return (
                 {mahvResult.tenhv} ({mahvResult.mahv})
               </div>
               <div style={{ display: "flex", gap: "20px", fontSize: "14px" }}>
-                {(isManager ? ["Có mặt","Vắng mặt"] : ["Có mặt"]).map(status => (
+                {["Có mặt","Vắng mặt"].map(status => (
                   <label key={status}>
                     <input
                       type="radio"
